@@ -255,7 +255,7 @@ const Index = () => {
       <Header />
       
       {/* Hero Section with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1466442929976-97f336a657be?w=1200&h=600&fit=crop)' }}>
+      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://frontdesk.co.in/wp-content/uploads/2024/03/image-21-1030x571.png)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="text-center">
