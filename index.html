@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panchayat Samiti Navapur - Nandurbar, Maharashtra</title>
+    <meta name="description" content="Official website of Panchayat Samiti Navapur, Nandurbar, Maharashtra. Access government schemes, services, and information for rural development." />
+    <meta name="author" content="Panchayat Samiti Navapur" />
+    <meta name="keywords" content="Panchayat Samiti, Navapur, Nandurbar, Maharashtra, Government Services, Rural Development, Schemes" />
+
+    <meta property="og:title" content="Panchayat Samiti Navapur - Nandurbar, Maharashtra" />
+    <meta property="og:description" content="Official website of Panchayat Samiti Navapur providing access to government schemes, services, and rural development information." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Panchayat Samiti Navapur" />
+    <meta name="twitter:description" content="Official government website for rural development services and schemes" />
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" />
+    
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./style.css">
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <!-- Chatbot Widget -->
+        <div id="chatbot-container">
+            <!-- Chat Window -->
+            <div id="chat-window">
+                <div id="chat-header">
+                    <h3 id="chat-title">Panchayat Samiti AI Assistant</h3>
+                    <select id="language-selector" class="language-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                    </select>
+                </div>
+                <div id="chat-messages" class="messages"></div>
+                <div id="chat-input-container">
+                    <input type="text" id="chat-input" class="chat-input" placeholder="Type your message...">
+                    <button id="send-button" class="send-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Toggle Button -->
+            <div id="chat-toggle-btn">
+                <div id="chat-toggle-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
