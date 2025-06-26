@@ -101,3 +101,74 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Google Translator Styles */
+.translate-btn {
+  background-color: transparent;
+  border: none;
+  color: black;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.translate-btn img {
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+.translator-modal {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 400px;
+  padding: 10px;
+}
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+.language-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.language-option {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+.language-option:hover {
+  background-color: #f9f9f9;
+}
+.language-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.language-native {
+  color: #666;
+}
+.active-language {
+  border: 2px solid #ff4500;
+  background-color: #fff8f6;
+}
+.skiptranslate,
+.goog-te-banner-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}

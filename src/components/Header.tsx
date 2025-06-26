@@ -1,96 +1,90 @@
-
-import { useState } from 'react';
+/* src/components/Header.tsx
+   -------------------------------------------------------------- */
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-import GoogleTranslator from './GoogleTranslator';
+import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import GoogleTranslator from "@/components/GoogleTranslator"; // ⬅️ translator modal
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
 
-  const navigationLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Schemes', href: '/schemes' },
-    { name: 'Services', href: '/services' },
-    { name: 'About Us', href: '/about' },
-    { name: 'Our Team', href: '/team' },
-    { name: 'Gallery', href: '/gallery' },
-    { name: 'Contact Us', href: '/contact' },
+  const links = [
+    { name: "Home",       href: "/" },
+    { name: "Schemes",    href: "/schemes" },
+    { name: "Services",   href: "/services" },
+    { name: "About Us",   href: "/about" },
+    { name: "Our Team",   href: "/team" },
+    { name: "Gallery",    href: "/gallery" },
+    { name: "Contact Us", href: "/contact" }
   ];
 
+  const NavLinks = ({ onClick }: { onClick?: () => void }) => (
+    <>
+      {links.map((l) => (
+        <Link
+          key={l.name}
+          to={l.href}
+          onClick={onClick}
+          className="font-medium text-gray-700 hover:text-blue-600 transition-colors"
+        >
+          {l.name}
+        </Link>
+      ))}
+    </>
+  );
+
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
-      {/* Top Banner */}
-      <div className="bg-orange-500 text-white py-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
-          Government of India | Government of Maharashtra
-        </div>
+    <header className="sticky top-0 z-50 bg-white shadow-lg">
+      {/* --- Thin GoI banner ------------------------------------------- */}
+      <div className="bg-orange-500 py-2 text-center text-sm text-white">
+        Government of India&nbsp;|&nbsp;Government of Maharashtra
       </div>
 
-      {/* Main Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo and Title */}
+      {/* --- Main header row ------------------------------------------- */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-4">
+          {/* Logo & title */}
           <div className="flex items-center space-x-4">
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" 
-              alt="India Flag" 
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg"
+              alt="India Flag"
               className="h-12 w-18"
             />
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Panchayat Samiti Navapur</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                Panchayat Samiti Navapur
+              </h1>
               <p className="text-sm text-gray-600">Nandurbar, Maharashtra</p>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {navigationLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className={`text-gray-700 hover:text-blue-600 font-medium transition-colors ${
-                  location.pathname === link.href ? 'text-blue-600' : ''
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            
-            {/* Language Selector */}
+          {/* Desktop nav */}
+          <nav className="hidden items-center space-x-8 lg:flex">
+            <NavLinks />
+            {/* Translator dropdown button */}
             <GoogleTranslator />
           </nav>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu toggle */}
           <Button
             variant="outline"
             size="sm"
             className="lg:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle navigation"
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t">
+        {/* Mobile nav panel */}
+        {open && (
+          <div className="border-t py-4 lg:hidden">
             <nav className="flex flex-col space-y-4">
-              {navigationLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className={`text-gray-700 hover:text-blue-600 font-medium transition-colors ${
-                    location.pathname === link.href ? 'text-blue-600' : ''
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              
-              <div className="pt-4 border-t">
+              <NavLinks onClick={() => setOpen(false)} />
+              <div className="border-t pt-4">
                 <GoogleTranslator />
               </div>
             </nav>
