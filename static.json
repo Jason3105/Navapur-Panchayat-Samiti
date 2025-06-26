@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "src": "/(mr|hi|gu|ta|te|kn|ml|en)(/.*)?",
+      "dest": "/index.html"
+    },
+    {
       "src": "/.*",
       "dest": "/index.html"
     }
