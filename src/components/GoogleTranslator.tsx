@@ -1,3 +1,4 @@
+// @charset "UTF-8";
 import { useEffect, useState } from "react";
 
 const languages = [
@@ -114,8 +115,9 @@ const GoogleTranslator = () => {
                   setIsOpen(false);
                 }}
               >
-                <div className="language-name">{lang.name}</div>
-                <div className="language-native">{lang.native}</div>
+                <div className="language-name notranslate">{lang.name}</div>
+                <div className="language-native notranslate">{lang.native}</div>
+
               </div>
             ))}
           </div>

@@ -172,3 +172,9 @@
 body {
   top: 0 !important;
 }
+.notranslate {
+  translate: no;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
