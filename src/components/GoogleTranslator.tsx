@@ -1,93 +1,81 @@
+/* GoogleTranslator.tsx ---------------------------------------------------- */
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Globe, X, Check } from "lucide-react";
 
-interface Language {
+/* ────────────────── Language list ────────────────── */
+interface Lang {
   code: string;
   name: string;
   native: string;
 }
 
-const languages: Language[] = [
-  { code: "en", name: "English", native: "English" },
-  { code: "mr", name: "Marathi", native: "मराठी" },
-  { code: "hi", name: "Hindi", native: "हिन्दी" },
-  { code: "gu", name: "Gujarati", native: "ગુજરાતી" },
-  { code: "ta", name: "Tamil", native: "தமிழ்" },
-  { code: "te", name: "Telugu", native: "తెలుగు" },
-  { code: "kn", name: "Kannada", native: "ಕನ್ನಡ" },
-  { code: "ml", name: "Malayalam", native: "മലയാളം" },
+const LANGS: Lang[] = [
+  { code: "en", name: "English",  native: "English"   },
+  { code: "mr", name: "Marathi",  native: "मराठी"      },
+  { code: "hi", name: "Hindi",    native: "हिन्दी"     },
+  { code: "gu", name: "Gujarati", native: "ગુજરાતી"    },
+  { code: "ta", name: "Tamil",    native: "தமிழ்"      },
+  { code: "te", name: "Telugu",   native: "తెలుగు"     },
+  { code: "kn", name: "Kannada",  native: "ಕನ್ನಡ"      },
+  { code: "ml", name: "Malayalam",native: "മലയാളം"     },
 ];
 
+/* ────────────────── Component ────────────────── */
 const GoogleTranslator = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState("en");
-  const [isTranslating, setIsTranslating] = useState(false);
-  const [buttonRef, setButtonRef] = useState<HTMLButtonElement | null>(null);
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState("en");
+  const [busy, setBusy] = useState(false);
+  const [btnRef, setBtnRef] = useState<HTMLButtonElement | null>(null);
 
-  /* ------------------------------------------------------- */
-  /* 1️⃣  Load Google-Translate script once on mount         */
-  /* ------------------------------------------------------- */
+  /* 1️⃣  Load Google script once */
   useEffect(() => {
-    if (!document.getElementById("google-translate-script")) {
-      const script = document.createElement("script");
-      script.id = "google-translate-script";
-      script.src =
-        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
+    if (!document.getElementById("gt-script")) {
+      const s = document.createElement("script");
+      s.id  = "gt-script";
+      s.src = "//translate.google.com/translate_a/element.js?cb=gtInit";
+      s.async = true;
+      document.body.appendChild(s);
 
-      (window as any).googleTranslateElementInit = () => {
+      (window as any).gtInit = () => {
         new (window as any).google.translate.TranslateElement(
           {
             pageLanguage: "en",
+            includedLanguages: LANGS.map(l => l.code).join(","),
             autoDisplay: false,
-            includedLanguages: languages.map((l) => l.code).join(","),
             layout: (window as any).google.translate.TranslateElement
-              .InlineLayout.SIMPLE,
+                    .InlineLayout.SIMPLE,
           },
-          "google_translate_element"
+          "gt-element"
         );
       };
     }
 
-    const saved = document.cookie.match(/(^|;)\s*googtrans=\/en\/([^;]+)/);
-    if (saved && saved[2]) setCurrentLanguage(saved[2]);
+    /* read cookie so label stays right after refresh */
+    const m = document.cookie.match(/(^|;)\s*googtrans=\/en\/([^;]+)/);
+    if (m && m[2]) setCurrent(m[2]);
   }, []);
 
-  /* ------------------------------------------------------- */
-  /* 2️⃣  Util: set / clear googtrans cookie                 */
-  /* ------------------------------------------------------- */
-  const setCookie = (value: string | null) => {
-    const expire = value ? "" : "Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    document.cookie = `googtrans=${value ?? ""}; path=/; ${expire}`;
-    document.cookie = `googtrans=${value ?? ""}; path=/; domain=${
-      window.location.hostname
-    }; ${expire}`;
+  /* util – set or clear googtrans cookie */
+  const setCookie = (val: string | null) => {
+    const exp = val ? "" : "Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie = `googtrans=${val ?? ""}; path=/; ${exp}`;
+    document.cookie = `googtrans=${val ?? ""}; path=/; domain=${location.hostname}; ${exp}`;
   };
 
-  /* ------------------------------------------------------- */
-  /* 3️⃣  Change language WITHOUT page reload                */
-  /* ------------------------------------------------------- */
-  const changeLanguage = (lang: string) => {
-    if (lang === currentLanguage) {
-      setIsModalOpen(false);
-      return;
-    }
+  /* 2️⃣  Change language without reloading (unless we must) */
+  const changeLang = (lang: string) => {
+    if (lang === current) return setOpen(false);
 
-    setIsTranslating(true);
-    setCurrentLanguage(lang);
-    setIsModalOpen(false);
+    setBusy(true);
+    setCurrent(lang);
+    setOpen(false);
 
-    if (lang === "en") {
-      setCookie(null);
-    } else {
-      setCookie(`/en/${lang}`);
-    }
+    lang === "en" ? setCookie(null) : setCookie(`/en/${lang}`);
 
     let tries = 0;
-    const maxTries = 20; // 20 × 100 ms = 2 s
-    const attempt = () => {
+    const max = 60;          // 60 × 200 ms = 12 s
+    const tryTranslate = () => {
       const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
       if (combo) {
         combo.style.display = "none";
@@ -95,81 +83,75 @@ const GoogleTranslator = () => {
         combo.dispatchEvent(new Event("change"));
 
         setTimeout(() => {
-          document
-            .querySelectorAll(
-              ".goog-te-banner-frame, .skiptranslate, .goog-te-gadget, .goog-te-balloon-frame"
-            )
-            .forEach((el) => ((el as HTMLElement).style.display = "none"));
-          setIsTranslating(false);
+          /* hide any banner Google tries to add */
+          document.querySelectorAll(
+            ".goog-te-banner-frame, .skiptranslate, .goog-te-gadget, .goog-te-balloon-frame"
+          ).forEach(el => ((el as HTMLElement).style.display = "none"));
+          setBusy(false);
         }, 600);
-      } else if (++tries < maxTries) {
-        setTimeout(attempt, 100);
+      } else if (++tries < max) {
+        setTimeout(tryTranslate, 200);           // keep waiting
       } else {
-        // Rare fallback
-        window.location.reload();
+        /* last-resort – reload path with prefix, works with static.json */
+        window.location.href =
+          lang === "en"
+            ? location.pathname
+            : `/${lang}${location.pathname}`;
       }
     };
-    attempt();
+    tryTranslate();
   };
 
-  /* ------------------------------------------------------- */
-  /* 4️⃣  Helpers for button label                           */
-  /* ------------------------------------------------------- */
-  const getName = () =>
-    languages.find((l) => l.code === currentLanguage)?.native ?? "English";
+  const label = LANGS.find(l => l.code === current)?.native ?? "English";
 
-  /* ------------------------------------------------------- */
-  /* 5️⃣  JSX                                                */
-  /* ------------------------------------------------------- */
+  /* 3️⃣  JSX */
   return (
     <>
-      {/* Hidden Google host div */}
-      <div id="google_translate_element" style={{ display: "none" }} />
+      {/* hidden host for Google gadget */}
+      <div id="gt-element" style={{ display: "none" }} />
 
-      {/* Trigger button */}
+      {/* trigger button */}
       <Button
-        ref={setButtonRef}
+        ref={setBtnRef}
         variant="outline"
         size="sm"
-        disabled={isTranslating}
-        onClick={() => setIsModalOpen(true)}
-        className="ml-4 bg-white hover:bg-orange-50 border-orange-200 text-orange-700 hover:text-orange-800 hover:border-orange-300 transition-all"
+        disabled={busy}
+        onClick={() => setOpen(true)}
+        className="ml-4 border-orange-200 bg-white text-orange-700
+                   hover:bg-orange-50 hover:text-orange-800 hover:border-orange-300
+                   transition-all"
       >
-        {isTranslating ? (
-          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-orange-600 border-t-transparent" />
+        {busy ? (
+          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2
+                           border-orange-600 border-t-transparent" />
         ) : (
           <Globe className="mr-2 h-4 w-4" />
         )}
-        {getName()}
+        {label}
       </Button>
 
-      {/* Modal */}
-      {isModalOpen && buttonRef && (
+      {/* language dropdown modal */}
+      {open && btnRef && (
         <div className="fixed inset-0 z-50">
-          <div
-            className="fixed inset-0 bg-transparent"
-            onClick={() => setIsModalOpen(false)}
-          />
+          <div className="fixed inset-0" onClick={() => setOpen(false)} />
           <div
             className="absolute w-96 rounded-xl border border-gray-200 bg-white shadow-2xl"
             style={{
-              top: buttonRef.getBoundingClientRect().bottom + window.scrollY + 8,
+              top: btnRef.getBoundingClientRect().bottom + window.scrollY + 8,
               left: Math.min(
-                buttonRef.getBoundingClientRect().left + window.scrollX,
+                btnRef.getBoundingClientRect().left + window.scrollX,
                 window.innerWidth - 400
               ),
             }}
           >
-            {/* Header */}
+            {/* header */}
             <div className="flex items-center justify-between border-b border-gray-100 p-6">
               <div className="flex items-center space-x-3">
-                <div className="rounded-lg bg-orange-100 p-2">
+                <span className="rounded-lg bg-orange-100 p-2">
                   <Globe className="h-5 w-5 text-orange-600" />
-                </div>
+                </span>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Select Language
-                  </h3>
+                  <h3 className="text-lg font-semibold">Select Language</h3>
                   <p className="text-sm text-gray-500">
                     Choose your preferred language
                   </p>
@@ -178,37 +160,37 @@ const GoogleTranslator = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                onClick={() => setOpen(false)}
+                className="h-8 w-8 rounded-full p-2 text-gray-400
+                           hover:bg-gray-100 hover:text-gray-600"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Grid */}
+            {/* language grid */}
             <div className="p-6">
               <div className="grid grid-cols-2 gap-3">
-                {languages.map((lang) => (
+                {LANGS.map(l => (
                   <div
-                    key={lang.code}
-                    onClick={() => changeLanguage(lang.code)}
-                    className={`group cursor-pointer rounded-lg border p-3 transition-all ${
-                      currentLanguage === lang.code
-                        ? "border-orange-500 bg-orange-50 shadow-sm"
-                        : "border-gray-200 hover:border-orange-300 hover:bg-orange-25"
-                    }`}
+                    key={l.code}
+                    onClick={() => changeLang(l.code)}
+                    className={`group cursor-pointer rounded-lg border p-3 transition
+                      ${
+                        current === l.code
+                          ? "border-orange-500 bg-orange-50 shadow-sm"
+                          : "border-gray-200 hover:border-orange-300 hover:bg-orange-25"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm font-medium text-gray-900 group-hover:text-orange-700">
-                          {lang.name}
-                        </div>
-                        <div className="mt-1 text-xs text-gray-600">
-                          {lang.native}
-                        </div>
+                        <p className="text-sm font-medium group-hover:text-orange-700">
+                          {l.name}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-600">{l.native}</p>
                       </div>
-                      {currentLanguage === lang.code && (
-                        <Check className="h-4 w-4 flex-shrink-0 text-orange-600" />
+                      {current === l.code && (
+                        <Check className="h-4 w-4 text-orange-600" />
                       )}
                     </div>
                   </div>
@@ -219,23 +201,13 @@ const GoogleTranslator = () => {
         </div>
       )}
 
-      {/* 6️⃣  CSS to nuke Google UI elements */}
+      {/* hide every Google Translate artefact */}
       <style>{`
-        .skiptranslate,
-        .goog-te-banner-frame,
-        .goog-te-gadget,
-        .goog-te-combo,
-        .goog-logo-link,
-        .goog-te-menu-value,
-        .goog-te-menu-frame,
-        iframe.goog-te-banner-frame,
-        #goog-gt-tt,
-        .goog-te-balloon-frame,
-        .VIpgJd-ZVi9od-ORHb-OEVmcd,
-        .goog-te-ftab {
-          display: none !important;
-          visibility: hidden !important;
-        }
+        .skiptranslate, .goog-te-banner-frame, .goog-te-gadget,
+        .goog-te-combo, .goog-logo-link, .goog-te-menu-value,
+        .goog-te-menu-frame, iframe.goog-te-banner-frame,
+        #goog-gt-tt, .goog-te-balloon-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd,
+        .goog-te-ftab { display: none !important; visibility: hidden !important; }
         body { top: 0 !important; }
       `}</style>
     </>
