@@ -1,0 +1,2 @@
+# Serve index.html for every request (SPA fallback)
+/*    /index.html   200
