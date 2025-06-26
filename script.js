@@ -2,13 +2,13 @@
 const GEMINI_API_KEY = 'AIzaSyAj9NCp0-9909MPLfds93gsO_gANOITjQQ';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-// DOM Elements
-const chatToggleBtn = document.getElementById('chat-toggle-btn');
-const chatWindow = document.getElementById('chat-window');
-const chatInput = document.getElementById('chat-input');
-const sendButton = document.getElementById('send-button');
-const messagesContainer = document.getElementById('chat-messages');
-const languageSelect = document.getElementById('language-selector');
+// DOM Elements (updated IDs)
+const chatToggleBtn = document.getElementById('navapur-chat-toggle-btn');
+const chatWindow = document.getElementById('navapur-chat-window');
+const chatInput = document.getElementById('navapur-chat-input');
+const sendButton = document.getElementById('navapur-send-button');
+const messagesContainer = document.getElementById('navapur-chat-messages');
+const languageSelect = document.getElementById('navapur-language-selector');
 
 // Panchayat context prompt to ensure responses stay within domain
 const PANCHAYAT_CONTEXT = `You are Panchayat Samiti of Navapur AI, an AI assistant specifically designed for the Panchayat Samiti of Navapur. You provide information about:
@@ -168,7 +168,7 @@ function handleSendMessage() {
 // Add a user message to the chat
 function addUserMessage(message) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message', 'user-message');
+    messageElement.classList.add('navapur-message', 'navapur-user-message');
     messageElement.textContent = message;
     messagesContainer.appendChild(messageElement);
     scrollToBottom();
@@ -177,8 +177,9 @@ function addUserMessage(message) {
 // Add a bot message to the chat
 function addBotMessage(message) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message', 'bot-message');
-    messageElement.textContent = message;
+    messageElement.classList.add('navapur-message', 'navapur-bot-message');
+    // Use marked to convert markdown to HTML
+    messageElement.innerHTML = marked.parse(message);
     messagesContainer.appendChild(messageElement);
     scrollToBottom();
 }
@@ -186,16 +187,16 @@ function addBotMessage(message) {
 // Show typing indicator
 function showTypingIndicator() {
     const typingElement = document.createElement('div');
-    typingElement.classList.add('message', 'bot-message', 'typing-indicator');
+    typingElement.classList.add('navapur-message', 'navapur-bot-message', 'navapur-typing-indicator');
     typingElement.innerHTML = '<span></span><span></span><span></span>';
-    typingElement.id = 'typing-indicator';
+    typingElement.id = 'navapur-typing-indicator';
     messagesContainer.appendChild(typingElement);
     scrollToBottom();
 }
 
 // Remove typing indicator
 function removeTypingIndicator() {
-    const typingElement = document.getElementById('typing-indicator');
+    const typingElement = document.getElementById('navapur-typing-indicator');
     if (typingElement) {
         typingElement.remove();
     }

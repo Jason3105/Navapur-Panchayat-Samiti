@@ -1,13 +1,13 @@
-        /* Base Theme Colors */
+/* Base Theme Colors */
         :root {
-            --primary-green: #2e7d32;
-            --light-green: #4caf50;
-            --cream: #f5f5f5;
-            --light-cream: #ffffff;
-            --white: #ffffff;
-            --text-dark: #333333;
-            --text-light: #666666;
-            --shadow: rgba(0, 0, 0, 0.1);
+            --navapur-primary-green: #2e7d32;
+            --navapur-light-green: #4caf50;
+            --navapur-cream: #f5f5f5;
+            --navapur-light-cream: #ffffff;
+            --navapur-white: #ffffff;
+            --navapur-text-dark: #333333;
+            --navapur-text-light: #666666;
+            --navapur-shadow: rgba(0, 0, 0, 0.1);
         }
         
         /* Demo Page Styling */
@@ -15,13 +15,13 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--light-cream);
-            color: var(--text-dark);
+            background-color: var(--navapur-light-cream);
+            color: var(--navapur-text-dark);
             min-height: 100vh;
         }
         
         /* Chatbot Container */
-        #chatbot-container {
+        #navapur-chatbot-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -32,65 +32,65 @@
         }
         
         /* Toggle Button */
-        #chat-toggle-btn {
+        #navapur-chat-toggle-btn {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background-color: var(--primary-green);
+            background-color: var(--navapur-primary-green);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 8px var(--shadow);
+            box-shadow: 0 4px 8px var(--navapur-shadow);
             transition: transform 0.3s ease;
         }
         
-        #chat-toggle-btn:hover {
+        #navapur-chat-toggle-btn:hover {
             transform: scale(1.05);
         }
         
-        #chat-toggle-icon {
-            color: var(--white);
+        #navapur-chat-toggle-icon {
+            color: var(--navapur-white);
             font-size: 24px;
         }
         
         /* Chat Window */
-        #chat-window {
+        #navapur-chat-window {
             width: 350px;
             height: 500px;
-            background-color: var(--white);
+            background-color: var(--navapur-white);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 5px 15px var(--shadow);
+            box-shadow: 0 5px 15px var(--navapur-shadow);
             margin-bottom: 15px;
             display: none;
             flex-direction: column;
             transition: all 0.3s ease;
         }
         
-        #chat-window.active {
+        #navapur-chat-window.active {
             display: flex;
         }
         
         /* Chat Header */
-        #chat-header {
-            background-color: var(--primary-green);
-            color: var(--white);
+        #navapur-chat-header {
+            background-color: var(--navapur-primary-green);
+            color: var(--navapur-white);
             padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        #chat-title {
+        #navapur-chat-title {
             font-weight: 600;
             margin: 0;
             font-size: 16px;
         }
         
-        #language-selector {
+        #navapur-language-selector {
             background-color: transparent;
-            color: var(--white);
+            color: var(--navapur-white);
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 4px;
             padding: 4px 8px;
@@ -99,20 +99,20 @@
             outline: none;
         }
         
-        #language-selector option {
-            background-color: var(--white);
-            color: var(--text-dark);
+        #navapur-language-selector option {
+            background-color: var(--navapur-white);
+            color: var(--navapur-text-dark);
         }
         
         /* Chat Messages Area */
-        #chat-messages {
+        #navapur-chat-messages {
             flex: 1;
             padding: 15px;
             overflow-y: auto;
-            background-color: var(--light-cream);
+            background-color: var(--navapur-light-cream);
         }
         
-        .message {
+        .navapur-message {
             margin-bottom: 12px;
             max-width: 80%;
             padding: 10px 12px;
@@ -122,57 +122,57 @@
             position: relative;
         }
         
-        .user-message {
-            background-color: var(--light-green);
-            color: var(--white);
+        .navapur-user-message {
+            background-color: var(--navapur-light-green);
+            color: var(--navapur-white);
             margin-left: auto;
             border-bottom-right-radius: 2px;
         }
         
-        .bot-message {
-            background-color: var(--cream);
-            color: var(--text-dark);
+        .navapur-bot-message {
+            background-color: var(--navapur-cream);
+            color: var(--navapur-text-dark);
             margin-right: auto;
             border-bottom-left-radius: 2px;
         }
         
-        .typing-indicator {
+        .navapur-typing-indicator {
             padding: 8px 16px;
         }
         
-        .typing-indicator span {
+        .navapur-typing-indicator span {
             height: 4px;
             width: 4px;
-            background-color: var(--text-light);
+            background-color: var(--navapur-text-light);
             display: inline-block;
             border-radius: 50%;
-            animation: typingAnimation 1.5s infinite ease-in-out;
+            animation: navapur-typingAnimation 1.5s infinite ease-in-out;
             margin: 0 2px;
         }
         
-        .typing-indicator span:nth-child(2) {
+        .navapur-typing-indicator span:nth-child(2) {
             animation-delay: 0.2s;
         }
         
-        .typing-indicator span:nth-child(3) {
+        .navapur-typing-indicator span:nth-child(3) {
             animation-delay: 0.4s;
         }
         
-        @keyframes typingAnimation {
+        @keyframes navapur-typingAnimation {
             0% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
             100% { transform: translateY(0); }
         }
         
         /* Input Area */
-        #chat-input-container {
+        #navapur-chat-input-container {
             display: flex;
             padding: 10px;
-            background-color: var(--white);
-            border-top: 1px solid var(--cream);
+            background-color: var(--navapur-white);
+            border-top: 1px solid var(--navapur-cream);
         }
         
-        #chat-input {
+        #navapur-chat-input {
             flex: 1;
             border: 1px solid #e0e0e0;
             border-radius: 20px;
@@ -181,12 +181,12 @@
             font-size: 14px;
         }
         
-        #chat-input:focus {
-            border-color: var(--light-green);
+        #navapur-chat-input:focus {
+            border-color: var(--navapur-light-green);
         }
         
-        #send-button {
-            background-color: var(--primary-green);
+        #navapur-send-button {
+            background-color: var(--navapur-primary-green);
             color: white;
             border: none;
             border-radius: 50%;
@@ -200,6 +200,6 @@
             transition: background-color 0.2s;
         }
         
-        #send-button:hover {
-            background-color: var(--light-green);
+        #navapur-send-button:hover {
+            background-color: var(--navapur-light-green);
         }
