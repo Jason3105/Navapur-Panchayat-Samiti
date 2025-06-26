@@ -1,12 +1,5 @@
 {
   "routes": [
-    {
-      "src": "/(mr|hi|gu|ta|te|kn|ml|en)(/(home|schemes|services|about|team|gallery|contact)?)?",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/.*",
-      "dest": "/index.html"
-    }
+    { "src": "/.*", "dest": "/index.html" }
   ]
 }
