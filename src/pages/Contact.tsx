@@ -1,250 +1,290 @@
-
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+/* contact.tsx -------------------------------------------------------------- */
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+
+import { useForm, ValidationError } from "@formspree/react";
+import { Toaster, toast } from "sonner"; // ⬅️ toast library
 
 const Contact = () => {
+  /* ----------------------------------------------------------------------- */
+  /* Formspree hook – replace “xldnoayb” with your own ID if needed          */
+  /* ----------------------------------------------------------------------- */
+  const [state, handleSubmit] = useForm("xldnoayb");
+
+  /* Local controlled inputs (optional but nicer UX) ----------------------- */
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+  /* Show toast on success, then clear form -------------------------------- */
+  useEffect(() => {
+    if (state.succeeded) {
+      toast.success("Message sent successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
       });
-
-      if (response.ok) {
-        alert('Message sent successfully!');
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: ''
-        });
-      } else {
-        alert('Failed to send message. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+      /* Optional: you can also call state.reset() here, but clearing fields
+         is enough because Formspree auto-resets its internal state soon.   */
     }
-  };
+  }, [state.succeeded]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
+      {/* One global toaster for this page.
+         ⓘ If you already have <Toaster /> in _app.tsx / index.tsx, remove this. */}
+      <Toaster position="bottom-right" richColors />
+
       <Header />
-      
-      {/* Page Header with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop)' }}>
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+
+      {/* -------------------- Hero banner ---------------------------------- */}
+      <section
+        className="relative bg-cover bg-center bg-no-repeat py-16"
+        style={{
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop)",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative mx-auto max-w-7xl px-4 text-white sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-            <p className="text-xl opacity-90 max-w-3xl mx-auto">
-              We're here to serve you. Get in touch with us for any queries or assistance.
+            <h1 className="mb-4 text-4xl font-bold md:text-5xl">Contact Us</h1>
+            <p className="mx-auto max-w-3xl text-xl opacity-90">
+              We're here to serve you. Get in touch with us for any queries or
+              assistance.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Information and Form */}
+      {/* -------------------- Two-column section --------------------------- */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <div>
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle className="text-2xl">Get in Touch</CardTitle>
-                  <CardDescription>
-                    Visit us during office hours or contact us through the information below.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-start space-x-4">
-                    <MapPin className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Office Address</h3>
-                      <p className="text-gray-600">
-                        Panchayat Samiti Office<br />
-                        Navapur, Nandurbar<br />
-                        Maharashtra - 425418
-                      </p>
-                    </div>
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          {/* LEFT COLUMN – info + map -------------------------------------- */}
+          <div>
+            {/* Contact Info Card */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl">Get in Touch</CardTitle>
+                <CardDescription>
+                  Visit us during office hours or reach us via:
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Address */}
+                <div className="flex space-x-4">
+                  <MapPin className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Office Address</h3>
+                    <p>Panchayat Samiti Office<br/>Navapur, Nandurbar<br/>Maharashtra – 425418</p>
                   </div>
-                  
-                  <div className="flex items-start space-x-4">
-                    <Phone className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Phone Number</h3>
-                      <p className="text-gray-600">+91 9876543210</p>
-                    </div>
+                </div>
+                {/* Phone */}
+                <div className="flex space-x-4">
+                  <Phone className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Phone Number</h3>
+                    <p>+91 98765 43210</p>
                   </div>
-                  
-                  <div className="flex items-start space-x-4">
-                    <Mail className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Email Address</h3>
-                      <p className="text-gray-600">info@navapurpanchayat.gov.in</p>
-                    </div>
+                </div>
+                {/* Email */}
+                <div className="flex space-x-4">
+                  <Mail className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Email Address</h3>
+                    <p>info@navapurpanchayat.gov.in</p>
                   </div>
-                  
-                  <div className="flex items-start space-x-4">
-                    <Clock className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold mb-1">Office Hours</h3>
-                      <p className="text-gray-600">
-                        Monday - Friday: 10:00 AM - 5:00 PM<br />
-                        Saturday: 10:00 AM - 2:00 PM<br />
-                        Sunday: Closed
-                      </p>
-                    </div>
+                </div>
+                {/* Hours */}
+                <div className="flex space-x-4">
+                  <Clock className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold">Office Hours</h3>
+                    <p>
+                      Mon – Fri : 10 AM–5 PM<br/>
+                      Sat : 10 AM–2 PM<br/>
+                      Sun : Closed
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Location Map */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Our Location</CardTitle>
-                  <CardDescription>Find us on the map</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-200 rounded-lg overflow-hidden h-64">
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119066.1398464812!2d73.8567437!3d21.1702401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd29c9dc0b2a5c5%3A0x31b1b1b1b1b1b1b1!2sNavapur%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1635678901234!5m2!1sen!2sin"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen={true}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Panchayat Samiti Navapur Location"
-                    ></iframe>
-                  </div>
-                  <div className="mt-4">
-                    <a 
-                      href="https://maps.google.com/?q=Navapur,Maharashtra" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 transition-colors text-sm"
-                    >
-                      View Larger Map
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Map Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Our Location</CardTitle>
+                <CardDescription>Find us on the map</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 overflow-hidden rounded-lg bg-gray-200">
+                  <iframe
+                    title="Panchayat Samiti Navapur Location"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d119066.1398464812!2d73.8567437!3d21.1702401!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bd29c9dc0b2a5c5%3A0x31b1b1b1b1b1b1b1!2sNavapur%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1635678901234!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <div className="mt-4">
+                  <a
+                    href="https://maps.google.com/?q=Navapur,Maharashtra"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    View larger map
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Contact Form */}
-            <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                  <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as possible.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Full Name *</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          type="text"
-                          required
-                          value={formData.name}
-                          onChange={handleChange}
-                          placeholder="Enter your full name"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleChange}
-                          placeholder="Enter your phone number"
-                        />
-                      </div>
-                    </div>
-                    
+          {/* RIGHT COLUMN – form ------------------------------------------- */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Send us a Message</CardTitle>
+                <CardDescription>
+                  Fill out the form below and we’ll reply as soon as possible.
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                {/* Global non-field errors */}
+                {Array.isArray(state.errors) && state.errors.length > 0 && (
+                  <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-800">
+                    Something went wrong – please check the highlighted fields.
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Row: name + phone */}
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <Label htmlFor="email">Email Address *</Label>
+                      <Label htmlFor="name">Full Name *</Label>
                       <Input
-                        id="email"
-                        name="email"
-                        type="email"
+                        id="name"
+                        name="name"
                         required
-                        value={formData.email}
+                        placeholder="Enter your full name"
+                        value={formData.name}
                         onChange={handleChange}
-                        placeholder="Enter your email address"
+                      />
+                      <ValidationError
+                        prefix="Name"
+                        field="name"
+                        errors={state.errors}
                       />
                     </div>
-                    
                     <div>
-                      <Label htmlFor="subject">Subject *</Label>
+                      <Label htmlFor="phone">Phone Number</Label>
                       <Input
-                        id="subject"
-                        name="subject"
-                        type="text"
-                        required
-                        value={formData.subject}
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        value={formData.phone}
                         onChange={handleChange}
-                        placeholder="Enter the subject"
                       />
                     </div>
-                    
-                    <div>
-                      <Label htmlFor="message">Message *</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        required
-                        value={formData.message}
-                        onChange={handleChange}
-                        placeholder="Enter your message"
-                        rows={6}
-                      />
-                    </div>
-                    
-                    <Button type="submit" className="w-full">
-                      <Send className="h-4 w-4 mr-2" />
-                      Send Message
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </div>
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                    <ValidationError
+                      prefix="Email"
+                      field="email"
+                      errors={state.errors}
+                    />
+                  </div>
+
+                  {/* Subject */}
+                  <div>
+                    <Label htmlFor="subject">Subject *</Label>
+                    <Input
+                      id="subject"
+                      name="subject"
+                      required
+                      placeholder="Enter the subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                    />
+                    <ValidationError
+                      prefix="Subject"
+                      field="subject"
+                      errors={state.errors}
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <Label htmlFor="message">Message *</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      required
+                      placeholder="Enter your message"
+                      value={formData.message}
+                      onChange={handleChange}
+                    />
+                    <ValidationError
+                      prefix="Message"
+                      field="message"
+                      errors={state.errors}
+                    />
+                  </div>
+
+                  {/* Submit button */}
+                  <Button
+                    type="submit"
+                    disabled={state.submitting}
+                    className="w-full"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    {state.submitting ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
