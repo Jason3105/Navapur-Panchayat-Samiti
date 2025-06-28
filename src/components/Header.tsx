@@ -48,7 +48,7 @@ const Header = () => {
           {/* Logo & title */}
           <div className="flex items-center space-x-4">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg"
+              src="/logo.png"
               alt="India Flag"
               className="h-12 w-18"
             />
