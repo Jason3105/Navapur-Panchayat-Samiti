@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Award, Target, Heart } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Helmet } from "react-helmet";
 
 const About = () => {
   const timeline = [
@@ -52,8 +53,27 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>About Us | Panchayat Samiti Navapur</title>
+        <meta
+          name="description"
+          content="Discover the history, milestones, and mission of Panchayat Samiti Navapur—empowering rural communities of Nandurbar since 1995."
+        />
+        <meta property="og:title" content="About Panchayat Samiti Navapur" />
+        <meta
+          property="og:description"
+          content="Learn about the journey and impact of Panchayat Samiti Navapur in driving rural development and governance."
+        />
+        <meta property="og:image" content="https://panchayatnavapur.netlify.app/social-banner.png" />
+        <meta property="og:url" content="https://panchayatnavapur.netlify.app/about" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About Panchayat Samiti Navapur" />
+        <meta name="twitter:description" content="Rural development journey of Panchayat Samiti Navapur." />
+        <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/social-banner.png" />
+      </Helmet>
+
       <Header />
-      
+
       {/* Page Header with Background Image */}
       <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=600&fit=crop)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -76,27 +96,27 @@ const About = () => {
               Three decades of dedicated service to the tribal communities of Nandurbar district
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="order-2 lg:order-1 space-y-6">
               <div className="space-y-6">
                 <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-                  Panchayat Samiti Navapur serves as a crucial intermediate tier of the Panchayati Raj system, 
-                  bridging the gap between Gram Panchayats and the Zilla Parishad to ensure effective governance 
+                  Panchayat Samiti Navapur serves as a crucial intermediate tier of the Panchayati Raj system,
+                  bridging the gap between Gram Panchayats and the Zilla Parishad to ensure effective governance
                   and development in the tribal-dominated region of Nandurbar district.
                 </p>
                 <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-                  Our mission is to empower rural communities through participatory governance, sustainable development, 
-                  and social justice. We strive to improve the quality of life for all residents by providing access 
+                  Our mission is to empower rural communities through participatory governance, sustainable development,
+                  and social justice. We strive to improve the quality of life for all residents by providing access
                   to essential services, promoting economic opportunities, and preserving our rich cultural heritage.
                 </p>
                 <p className="text-gray-700 leading-relaxed text-base lg:text-lg">
-                  Through transparent governance, community participation, and innovative development programs, 
+                  Through transparent governance, community participation, and innovative development programs,
                   we continue to work towards creating a prosperous and equitable society for all.
                 </p>
               </div>
             </div>
-            
+
             <div className="order-1 lg:order-2 relative">
               <div className="relative overflow-hidden rounded-2xl shadow-xl">
                 <img
@@ -122,10 +142,10 @@ const About = () => {
               Key milestones and achievements that shaped our commitment to rural development
             </p>
           </div>
-          
+
           <div className="relative max-w-4xl mx-auto">
             <div className="absolute left-4 md:left-1/2 md:transform md:-translate-x-1/2 h-full w-1 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200"></div>
-            
+
             <div className="space-y-8">
               {timeline.map((item, index) => (
                 <div key={index} className="relative">
@@ -150,17 +170,17 @@ const About = () => {
                         </CardContent>
                       </Card>
                     </div>
-                    
+
                     <div className="absolute left-0 md:left-1/2 md:transform md:-translate-x-1/2 w-8 h-8 flex items-center justify-center">
                       <div className={`w-3 h-3 ${item.color} rounded-full border-2 border-white shadow-lg z-10`}></div>
                     </div>
-                    
+
                     <div className="hidden md:block w-5/12"></div>
                   </div>
                 </div>
               ))}
             </div>
-             </div>
+          </div>
         </div>
       </section>
 
