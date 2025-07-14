@@ -64,12 +64,12 @@ const About = () => {
           property="og:description"
           content="Learn about the journey and impact of Panchayat Samiti Navapur in driving rural development and governance."
         />
-        <meta property="og:image" content="https://panchayatnavapur.netlify.app/social-banner.png" />
+        <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
         <meta property="og:url" content="https://panchayatnavapur.netlify.app/about" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="About Panchayat Samiti Navapur" />
         <meta name="twitter:description" content="Rural development journey of Panchayat Samiti Navapur." />
-        <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/social-banner.png" />
+        <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/logo.png" />
       </Helmet>
 
       <Header />
