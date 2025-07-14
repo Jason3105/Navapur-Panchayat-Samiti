@@ -7,6 +7,7 @@ import { Search } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SchemeDetailModal from '../components/SchemeDetailModal';
+import { Helmet } from "react-helmet";
 
 const Schemes = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -393,6 +394,37 @@ const Schemes = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+  <title>Government Schemes | Panchayat Samiti Navapur</title>
+  <meta
+    name="description"
+    content="Explore the list of key government schemes implemented by Panchayat Samiti Navapur to promote rural development, welfare, and empowerment."
+  />
+  <meta
+    name="keywords"
+    content="Government Schemes, Navapur, Panchayat Samiti, Rural Development, Maharashtra, MGNREGA, PMAY, NRLM"
+  />
+  <meta name="author" content="Panchayat Samiti Navapur" />
+
+  {/* Open Graph / Facebook */}
+  <meta property="og:title" content="Government Schemes | Panchayat Samiti Navapur" />
+  <meta
+    property="og:description"
+    content="Discover various government initiatives and welfare programs facilitated by Panchayat Samiti Navapur."
+  />
+  <meta property="og:image" content="/logo.png" />
+  <meta property="og:url" content="https://navapurpanchayat.gov.in/schemes" />
+  <meta property="og:type" content="website" />
+
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Government Schemes | Panchayat Samiti Navapur" />
+  <meta
+    name="twitter:description"
+    content="Find government welfare schemes actively implemented for the rural community of Navapur."
+  />
+  <meta name="twitter:image" content="/logo.png" />
+</Helmet>
       <Header />
       
       {/* Page Header */}
