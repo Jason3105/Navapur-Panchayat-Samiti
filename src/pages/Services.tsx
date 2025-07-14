@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Home, Droplets, Users, Heart, BookOpen, Zap, Phone, Mail } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Helmet } from "react-helmet";
 
 const Services = () => {
   const services = [
@@ -172,6 +173,21 @@ const Services = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+<Helmet>
+  <title>Services | Panchayat Samiti Navapur</title>
+  <meta
+    name="description"
+    content="Explore the essential public services offered by Panchayat Samiti Navapur, including health, education, sanitation, and agriculture support for the local community."
+  />
+  <meta name="keywords" content="Panchayat Samiti Navapur, public services, health services, education, sanitation, agriculture support, rural development, Maharashtra" />
+  <meta name="author" content="Panchayat Samiti Navapur" />
+  <meta property="og:title" content="Services – Panchayat Samiti Navapur" />
+  <meta property="og:description" content="Discover the range of community services provided by Panchayat Samiti Navapur for inclusive and sustainable rural development." />
+  <meta property="og:image" content="/logo.png" />
+  <meta property="og:url" content="https://navapurpanchayat.gov.in/services" />
+  <meta name="twitter:card" content="summary_large_image" />
+</Helmet>
+
       <Header />
       
       {/* Page Header with Background Image */}
