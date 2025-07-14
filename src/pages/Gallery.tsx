@@ -224,6 +224,18 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+       <Helmet>
+        <title>Gallery | Panchayat Samiti Navapur</title>
+        <meta name="description" content="Explore our visual journey of community development, government initiatives, and public welfare activities" />
+        <meta property="og:title" content="Gallery | Panchayat Samiti Navapur" />
+        <meta property="og:description" content="Explore our visual journey of community development, initiatives, and events." />
+        <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
+        <meta property="og:url" content="https://panchayatnavapur.netlify.app/gallery" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Gallery | Panchayat Samiti Navapur" />
+        <meta name="twitter:description" content="Visual showcase of rural programs, training, and government activities in Navapur." />
+        <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/logo.png" />
+      </Helmet>
       <Header />
       
       {/* Page Header with Background Image */}
