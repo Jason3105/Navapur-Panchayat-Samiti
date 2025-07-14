@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SchemeDetailModal from '../components/SchemeDetailModal';
+import { Helmet } from "react-helmet";
 
 const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -252,6 +253,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+      <title>Panchayat Samiti Navapur | Official Website</title>
+      <meta
+        name="description"
+        content="Official website of Panchayat Samiti Navapur – Government schemes, services, leadership, and local development information for residents of Navapur, Nandurbar."
+      />
+      <meta property="og:title" content="Panchayat Samiti Navapur" />
+      <meta
+        property="og:description"
+        content="Explore government schemes, services, and announcements from Panchayat Samiti Navapur."
+      />
+      <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
+      <meta property="og:url" content="https://panchayatnavapur.netlify.app/" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Panchayat Samiti Navapur" />
+      <meta name="twitter:description" content="Official government website for Navapur." />
+      <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/logo.png" />
+    </Helmet>
       <Header />
       
       {/* Hero Section with Background Image */}
