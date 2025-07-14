@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Phone, Mail, MapPin } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Helmet } from "react-helmet";
 
 const Team = () => {
   const teamMembers = [
@@ -120,6 +121,20 @@ const Team = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+  <title>Our Team | Panchayat Samiti Navapur</title>
+  <meta
+    name="description"
+    content="Meet the dedicated officials and staff behind Panchayat Samiti Navapur, working tirelessly to implement policies and serve the community."
+  />
+  <meta name="keywords" content="Panchayat Samiti Navapur team, public officials, rural development officers, government staff, Navapur governance" />
+  <meta name="author" content="Panchayat Samiti Navapur" />
+  <meta property="og:title" content="Our Team – Panchayat Samiti Navapur" />
+  <meta property="og:description" content="Get to know the people leading the initiatives and development programs at Panchayat Samiti Navapur." />
+  <meta property="og:image" content="/logo.png" />
+  <meta property="og:url" content="https://navapurpanchayat.gov.in/team" />
+  <meta name="twitter:card" content="summary_large_image" />
+</Helmet>
       <Header />
       
       {/* Page Header with Background Image */}
