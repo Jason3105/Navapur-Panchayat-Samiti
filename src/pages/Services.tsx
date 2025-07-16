@@ -183,7 +183,7 @@ const Services = () => {
   <meta name="author" content="Panchayat Samiti Navapur" />
   <meta property="og:title" content="Services – Panchayat Samiti Navapur" />
   <meta property="og:description" content="Discover the range of community services provided by Panchayat Samiti Navapur for inclusive and sustainable rural development." />
-  <meta property="og:image" content="/logo.png" />
+  <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
   <meta property="og:url" content="https://navapurpanchayat.gov.in/services" />
   <meta name="twitter:card" content="summary_large_image" />
 </Helmet>
