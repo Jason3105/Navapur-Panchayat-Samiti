@@ -131,7 +131,7 @@ const Team = () => {
   <meta name="author" content="Panchayat Samiti Navapur" />
   <meta property="og:title" content="Our Team – Panchayat Samiti Navapur" />
   <meta property="og:description" content="Get to know the people leading the initiatives and development programs at Panchayat Samiti Navapur." />
-  <meta property="og:image" content="/logo.png" />
+  <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
   <meta property="og:url" content="https://navapurpanchayat.gov.in/team" />
   <meta name="twitter:card" content="summary_large_image" />
 </Helmet>
