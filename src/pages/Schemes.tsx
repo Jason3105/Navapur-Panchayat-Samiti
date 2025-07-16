@@ -412,7 +412,7 @@ const Schemes = () => {
     property="og:description"
     content="Discover various government initiatives and welfare programs facilitated by Panchayat Samiti Navapur."
   />
-  <meta property="og:image" content="/logo.png" />
+  <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
   <meta property="og:url" content="https://navapurpanchayat.gov.in/schemes" />
   <meta property="og:type" content="website" />
 
@@ -423,7 +423,7 @@ const Schemes = () => {
     name="twitter:description"
     content="Find government welfare schemes actively implemented for the rural community of Navapur."
   />
-  <meta name="twitter:image" content="/logo.png" />
+  <meta name="twitter:image" content="https://panchayatnavapur.netlify.app/logo.png" />
 </Helmet>
       <Header />
       
