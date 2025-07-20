@@ -192,32 +192,32 @@ const Index = () => {
 
   const galleryHighlights = [
     {
-      title: "Independence Day Celebration",
-      image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=300&fit=crop",
-      description: "Flag hoisting ceremony and cultural programs",
-      category: "Independence Day",
-      eventId: 1
-    },
-    {
-      title: "Health Camp",
-      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
-      description: "Free medical check-ups for villagers",
-      category: "Health Camps",
-      eventId: 2
-    },
-    {
-      title: "Digital Literacy Program",
-      image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=300&fit=crop",
-      description: "Computer training for rural youth",
-      category: "Education Programs",
-      eventId: 3
-    },
-    {
-      title: "Agriculture Training",
-      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
-      description: "Organic farming techniques workshop",
-      category: "Agriculture Training",
+      title: "Swachh Bharat Mission Waste Segregation Shed",
+      image: "/sba2.jpg",
+      description: "",
+      category: "Waste Management",
       eventId: 4
+    },
+    {
+      title: "Meeting on Completion of Incomplete Houses under PMAY-G",
+      image: "/may1.jpg",
+      description: "",
+      category: "Community Events",
+      eventId: 7
+    },
+    {
+      title: "Housing Order Distribution Program",
+      image: "/hodp1.jpg",
+      description: "",
+      category: "Community Events",
+      eventId: 6
+    },
+    {
+      title: "Promotion of Compost Fertilizer for Sustainable Farming",
+      image: "/cf.jpg",
+      description: "",
+      category: "Waste Management",
+      eventId: 8
     }
   ];
 
