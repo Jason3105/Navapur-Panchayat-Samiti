@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,160 +17,176 @@ const Gallery = () => {
 
   const categories = [
     'All',
-    'Independence Day',
-    'Health Camps',
-    'Education Programs',
-    'Agriculture Training',
+    // 'Independence Day',
+    // 'Health Camps',
+    // 'Education Programs',
+    'Waste Management',
     'Infrastructure Development',
     'Community Events'
   ];
 
   const events = [
-    {
-      id: 1,
-      title: "Independence Day Celebration 2024",
-      category: "Independence Day",
-      date: "August 15, 2024",
-      description: "Flag hoisting ceremony and cultural programs at Panchayat Samiti office",
-      coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop",
-          caption: "Flag hoisting ceremony by Panchayat Samiti President"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
-          caption: "Cultural performances by local school children"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-          caption: "Community members participating in the celebration"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&h=600&fit=crop",
-          caption: "Distribution of sweets and prizes to participants"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1466442929976-97f336a657be?w=800&h=600&fit=crop",
-          caption: "Group photo of all participants and officials"
-        }
-      ]
-    },
-    {
-      id: 2,
-      title: "Free Health Check-up Camp",
-      category: "Health Camps",
-      date: "September 10, 2024",
-      description: "Ayushman Bharat health camp providing free medical check-ups",
-      coverImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
-          caption: "Doctors conducting health check-ups"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop",
-          caption: "Medical equipment and testing facilities"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=800&h=600&fit=crop",
-          caption: "Patients receiving consultation"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=600&fit=crop",
-          caption: "Distribution of free medicines"
-        }
-      ]
-    },
-    {
-      id: 3,
-      title: "Digital Literacy Program",
-      category: "Education Programs",
-      date: "October 5, 2024",
-      description: "Training session on digital skills for rural youth",
-      coverImage: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=800&h=600&fit=crop",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=800&h=600&fit=crop",
-          caption: "Computer training session for rural youth"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop",
-          caption: "Participants learning basic computer skills"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-          caption: "Certificate distribution ceremony"
-        }
-      ]
-    },
+    // {
+    //   id: 1,
+    //   title: "Independence Day Celebration 2024",
+    //   category: "Independence Day",
+    //   date: "August 15, 2024",
+    //   description: "Flag hoisting ceremony and cultural programs at Panchayat Samiti office",
+    //   coverImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop",
+    //   images: [
+    //     {
+    //       src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop",
+    //       caption: "Flag hoisting ceremony by Panchayat Samiti President"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+    //       caption: "Cultural performances by local school children"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+    //       caption: "Community members participating in the celebration"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&h=600&fit=crop",
+    //       caption: "Distribution of sweets and prizes to participants"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1466442929976-97f336a657be?w=800&h=600&fit=crop",
+    //       caption: "Group photo of all participants and officials"
+    //     }
+    //   ]
+    // },
+    // {
+    //   id: 2,
+    //   title: "Free Health Check-up Camp",
+    //   category: "Health Camps",
+    //   date: "September 10, 2024",
+    //   description: "Ayushman Bharat health camp providing free medical check-ups",
+    //   coverImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
+    //   images: [
+    //     {
+    //       src: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
+    //       caption: "Doctors conducting health check-ups"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800&h=600&fit=crop",
+    //       caption: "Medical equipment and testing facilities"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=800&h=600&fit=crop",
+    //       caption: "Patients receiving consultation"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=600&fit=crop",
+    //       caption: "Distribution of free medicines"
+    //     }
+    //   ]
+    // },
+    // {
+    //   id: 3,
+    //   title: "Digital Literacy Program",
+    //   category: "Education Programs",
+    //   date: "October 5, 2024",
+    //   description: "Training session on digital skills for rural youth",
+    //   coverImage: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=800&h=600&fit=crop",
+    //   images: [
+    //     {
+    //       src: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=800&h=600&fit=crop",
+    //       caption: "Computer training session for rural youth"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop",
+    //       caption: "Participants learning basic computer skills"
+    //     },
+    //     {
+    //       src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+    //       caption: "Certificate distribution ceremony"
+    //     }
+    //   ]
+    // },
     {
       id: 4,
-      title: "Farmers Training Workshop",
-      category: "Agriculture Training",
-      date: "November 12, 2024",
-      description: "Organic farming techniques workshop",
-      coverImage: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=600&fit=crop",
+      title: "Swachh Bharat Mission Waste Segregation Shed",
+      category: "Waste Management",
+      date: "March 21st, 2023",
+      description: "As part of the Swachh Bharat Mission, the Panchayat Samiti of Navapur has set up a Waste Segregation Shed to promote proper disposal and recycling of dry and wet waste. This initiative aims to create a cleaner and healthier environment while encouraging community participation in sustainable waste management practices.",
+      coverImage: "/sba2.jpg",
       images: [
         {
-          src: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=800&h=600&fit=crop",
-          caption: "Agricultural expert demonstrating organic farming techniques"
+          src: "/sba2.jpg",
+          caption: "Wall painting promoting cleanliness and proper waste disposal at Gram Panchayat office"
         },
         {
-          src: "https://images.unsplash.com/photo-1466442929976-97f336a657be?w=800&h=600&fit=crop",
-          caption: "Farmers examining soil quality and composition"
+          src: "/sba1.jpg",
+          caption: "Inspection of a sanitation site under the Swachh Bharat Mission"
         },
         {
-          src: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=800&h=600&fit=crop",
-          caption: "Distribution of improved seeds and fertilizers"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=800&h=600&fit=crop",
-          caption: "Group discussion on crop management practices"
+          src: "/sba3.jpg",
+          caption: "Community meeting at government office"
         }
       ]
     },
     {
       id: 5,
-      title: "Water Tank Construction",
+      title: "Irrigation Well",
       category: "Infrastructure Development",
       date: "August 20, 2024",
-      description: "Inauguration of new water storage facility",
-      coverImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop",
+      description: "A water source built to provide a steady supply of water for agricultural fields. It helps farmers irrigate their crops efficiently, especially during dry seasons, ensuring better yield and sustainable farming practices.",
+      coverImage: "/iw.jpg",
       images: [
         {
-          src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop",
-          caption: "Newly constructed water storage tank"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=600&fit=crop",
-          caption: "Inauguration ceremony by local officials"
-        },
-        {
-          src: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?w=800&h=600&fit=crop",
-          caption: "Community members celebrating the new facility"
+          src: "/iw.jpg",
+          caption: "Water storage tank for agricultural purposes"
         }
       ]
     },
     {
       id: 6,
-      title: "Women Self-Help Group Meeting",
+      title: "Housing Order Distribution Program",
       category: "Community Events",
       date: "September 25, 2024",
-      description: "Monthly meeting discussing livelihood programs",
-      coverImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
+      description: "The Housing Order Distribution Program is an initiative where eligible beneficiaries receive official sanction letters for affordable housing under government schemes, promoting secure and dignified living for rural families.",
+      coverImage: "/hodp1.jpg",
       images: [
         {
-          src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-          caption: "Women's self-help group monthly meeting"
+          src: "/hodp1.jpg",
+          caption: "Beneficiaries proudly display their newly received housing orders during an official community distribution event."
         },
         {
-          src: "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=800&h=600&fit=crop",
-          caption: "Discussion on microfinance and livelihood programs"
+          src: "/hodp2.jpg",
+          caption: "Recipients stand as a group holding up their housing order documents at a formal government allocation ceremony."
+        }
+      ]
+    },
+    {
+      id: 7,
+      title: "Meeting on Completion of Incomplete Houses under PMAY-G",
+      category: "Community Events",
+      date: "October 12, 2024",
+      description: "A review was conducted at the Panchayat Samiti Navapur under the chairmanship of the Hon’ble Group Development Officer regarding the completion of incomplete houses under the Pradhan Mantri Awas Yojana - Gramin. The review focused on capturing photographs of completed houses that still have pending muster entries, with the involvement of the Rural Housing Engineer.",
+      coverImage: "/may1.jpg",
+      images: [
+        {
+          src: "/may1.jpg",
+          caption: "Officials and community members hold a meeting to discuss strategies for completing incomplete houses under the PMAY-G scheme."
         },
         {
-          src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=600&fit=crop",
-          caption: "Training on handicrafts and skill development"
+          src: "/may2.jpg",
+          caption: "Panel members address attendees about accelerating progress on pending rural housing projects under PMAY-G."
+        }
+      ]
+    },
+    {
+      id: 8,
+      title: "Promotion of Compost Fertilizer for Sustainable Farming",
+      category: "Waste Management",
+      date: "April 22nd, 2024",
+      description: "Compost fertilizer, made from organic waste, is an eco-friendly and cost-effective alternative to chemical fertilizers. It enriches the soil with essential nutrients, improves its structure, and promotes sustainable farming practices. By encouraging the use of compost, the Panchayat Samiti aims to support local farmers in adopting environmentally responsible methods that boost crop productivity and maintain soil health.",
+      coverImage: "/cf.jpg",
+      images: [
+        {
+          src: "/cf.jpg",
+          caption: "Field officers inspect the construction of a compost unit, promoting the use of organic fertilizer for sustainable farming practices."
         }
       ]
     }

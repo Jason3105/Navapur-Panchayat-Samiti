@@ -17,23 +17,23 @@ const Index = () => {
 
   const announcements = [
     {
-      title: "New Rural Housing Scheme Applications Open",
-      description: "Applications for Pradhan Mantri Awaas Yojana - Gramin are now being accepted. Apply before December 31st, 2024.",
-      date: "Dec 10, 2024",
+      title: "Announcements",
+      description: "For any queries please visit the Panchayat Office / Fill in the Contact Form on this website.",
+      date: "July 20, 2025",
       urgent: true
-    },
-    {
-      title: "Free Health Check-up Camp",
-      description: "Ayushman Bharat health camp organized at Primary Health Center on December 15th, 2024.",
-      date: "Dec 8, 2024",
-      urgent: false
-    },
-    {
-      title: "Skill Development Training Program",
-      description: "Deen Dayal Upadhyaya Grameen Kaushalya Yojana training starts from January 2025. Register now!",
-      date: "Dec 5, 2024",
-      urgent: false
     }
+    // {
+    //   title: "Free Health Check-up Camp",
+    //   description: "Ayushman Bharat health camp organized at Primary Health Center on December 15th, 2024.",
+    //   date: "Dec 8, 2024",
+    //   urgent: false
+    // },
+    // {
+    //   title: "Skill Development Training Program",
+    //   description: "Deen Dayal Upadhyaya Grameen Kaushalya Yojana training starts from January 2025. Register now!",
+    //   date: "Dec 5, 2024",
+    //   urgent: false
+    // }
   ];
 
   const services = [

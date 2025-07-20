@@ -84,11 +84,11 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-sm text-gray-400">
-            © 2024 Panchayat Samiti Navapur, Nandurbar. All rights reserved. | 
-            <span className="ml-2">Last updated: December 11, 2024</span>
+            © 2025 Panchayat Samiti Navapur, Nandurbar. All rights reserved. | 
+            <span className="ml-2">Last updated: July 20, 2025</span>
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            This website is designed to provide information about government services and schemes
+            This site is officially developed for Panchayat Samiti Navapur and is currently hosted on a development server.
           </p>
         </div>
       </div>
