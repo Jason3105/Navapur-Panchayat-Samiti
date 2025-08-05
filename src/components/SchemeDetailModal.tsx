@@ -1,14 +1,77 @@
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, Download, ExternalLink, Check } from 'lucide-react';
+import { X, Download, ExternalLink, Check, Phone, Mail } from 'lucide-react';
 
 interface SchemeDetailModalProps {
   scheme: any;
   isOpen: boolean;
   onClose: () => void;
 }
+
+// Team contacts mapping based on department
+const teamContacts: Record<string, { name: string; designation: string; phone: string }> = {
+  "Agriculture Department": {
+    name: "Mr. Nandkumar Suryavanshi",
+    designation: "Agricultural Officer (Incharge)",
+    phone: "+91 9923249324"
+  },
+  "Housing Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Social Justice Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Tribal Development Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Education Department": {
+    name: "Mr. R.B. Chourey",
+    designation: "Group Education Officer (Incharge)",
+    phone: "+91 8698516771"
+  },
+  "Health Department": {
+    name: "Mr. N.R. Ahirrao",
+    designation: "Department of Women and Child Welfare",
+    phone: "+91 7588828999"
+  },
+  "Finance Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Employment Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Department of Financial Services": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Department of Agriculture & Farmers Welfare": {
+    name: "Mr. Nandkumar Suryavanshi",
+    designation: "Agricultural Officer (Incharge)",
+    phone: "+91 9923249324"
+  },
+  "Ministry of Rural Development": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  },
+  "Rural Development Department": {
+    name: "Mr. Devidas Deore",
+    designation: "Group Development Officer",
+    phone: "+91 9689560349"
+  }
+};
 
 const SchemeDetailModal = ({ scheme, isOpen, onClose }: SchemeDetailModalProps) => {
   if (!isOpen || !scheme) return null;
@@ -72,7 +135,6 @@ const SchemeDetailModal = ({ scheme, isOpen, onClose }: SchemeDetailModalProps) 
     } else if (typeof scheme.eligibilityCriteria === 'string') {
       return [scheme.eligibilityCriteria];
     } else if (scheme.eligibility) {
-      // Fallback to eligibility field if it exists
       return Array.isArray(scheme.eligibility) ? scheme.eligibility : [scheme.eligibility];
     }
     return [];
@@ -88,6 +150,11 @@ const SchemeDetailModal = ({ scheme, isOpen, onClose }: SchemeDetailModalProps) 
     return [];
   };
 
+  // Get contact info based on department
+  const contact =
+    teamContacts[scheme.department] ||
+    teamContacts["Rural Development Department"];
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto w-full">
@@ -97,7 +164,6 @@ const SchemeDetailModal = ({ scheme, isOpen, onClose }: SchemeDetailModalProps) 
             <X className="h-6 w-6" />
           </Button>
         </div>
-        
         <div className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -174,10 +240,36 @@ const SchemeDetailModal = ({ scheme, isOpen, onClose }: SchemeDetailModalProps) 
                   <CardTitle className="text-lg">Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-gray-600 space-y-2">
-                  <p><strong>Department:</strong> {scheme.department || 'Panchayat Samiti Office'}</p>
-                  <p><strong>Phone:</strong> +91 9876543210</p>
-                  <p><strong>Email:</strong> info@navapurpanchayat.gov.in</p>
-                  <p><strong>Office Hours:</strong> Mon-Fri: 10:00 AM - 5:00 PM</p>
+                  <p>
+                    <strong>Department:</strong> {scheme.department || 'Panchayat Samiti Office'}
+                  </p>
+                  <p>
+                    <strong>Contact Person:</strong> {contact.name}
+                  </p>
+                  <p>
+                    <strong>Designation:</strong> {contact.designation}
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 text-blue-500" />
+                    <a
+                      href={`tel:${contact.phone.replace(/\s|\+91/g, "")}`}
+                      className="text-blue-700 hover:underline focus:outline-none"
+                    >
+                      {contact.phone}
+                    </a>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 text-blue-500" />
+                    <a
+                      href="/contact#contact-form"
+                      className="text-blue-700 hover:text-blue-900 focus:outline-none"
+                    >
+                      (Fill in the contact form)
+                    </a>
+                  </div>
+                  <p>
+                    <strong>Office Hours:</strong> Mon-Fri: 10:00 AM - 5:30 PM
+                  </p>
                 </CardContent>
               </Card>
             </div>

@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Home, Droplets, Users, Heart, BookOpen, Zap, Phone, Mail } from 'lucide-react';
+import { Home, Droplets, Users, Heart, BookOpen, Zap, Phone } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Helmet } from "react-helmet";
@@ -31,10 +30,9 @@ const Services = () => {
         "Passport size photographs"
       ],
       contact: {
-        name: "Mr. Ramesh Jadhav",
-        designation: "Housing Department",
-        phone: "+91 9876543211",
-        email: "housing@navapurpanchayat.gov.in"
+        name: "Mr. Devidas Deore",
+        designation: "Group Development Officer",
+        phone: "+91 9689560349"
       }
     },
     {
@@ -58,10 +56,9 @@ const Services = () => {
         "Previous water bill (if any)"
       ],
       contact: {
-        name: "Mrs. Lata Patel",
-        designation: "Water Department",
-        phone: "+91 9876543212",
-        email: "water@navapurpanchayat.gov.in"
+        name: "Mr. Kiran Gavit",
+        designation: "Sixth Group Development Officer",
+        phone: "+91 8208780259"
       }
     },
     {
@@ -85,10 +82,9 @@ const Services = () => {
         "Previous season's crop details"
       ],
       contact: {
-        name: "Mr. Sunil Patil",
-        designation: "Agriculture Department",
-        phone: "+91 9876543213",
-        email: "agriculture@navapurpanchayat.gov.in"
+        name: "Mr. Nandkumar Suryavanshi",
+        designation: "Agricultural Officer (Incharge)",
+        phone: "+91 9923249324"
       }
     },
     {
@@ -110,10 +106,9 @@ const Services = () => {
         "Health insurance card (if any)"
       ],
       contact: {
-        name: "Dr. Meena Singh",
-        designation: "Health Department",
-        phone: "+91 9876543214",
-        email: "health@navapurpanchayat.gov.in"
+        name: "Mr. N.R. Ahirrao",
+        designation: "Department of Women and Child Welfare",
+        phone: "+91 7588828999"
       }
     },
     {
@@ -137,10 +132,9 @@ const Services = () => {
         "Bank account details"
       ],
       contact: {
-        name: "Mrs. Anjali Deshmukh",
-        designation: "Education Department",
-        phone: "+91 9876543215",
-        email: "education@navapurpanchayat.gov.in"
+        name: "Mr. R.B. Chourey",
+        designation: "Group Education Officer (Incharge)",
+        phone: "+91 8698516771"
       }
     },
     {
@@ -163,35 +157,34 @@ const Services = () => {
         "NOC from landlord (for tenants)"
       ],
       contact: {
-        name: "Mr. Vijay Kumar",
-        designation: "Electricity Department",
-        phone: "+91 9876543216",
-        email: "electricity@navapurpanchayat.gov.in"
+        name: "Mr. Ajay Patil",
+        designation: "Deputy Engineer, Gram Panchayat Department",
+        phone: "+91 9403568158"
       }
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-<Helmet>
-  <title>Services | Panchayat Samiti Navapur</title>
-  <meta
-    name="description"
-    content="Explore the essential public services offered by Panchayat Samiti Navapur, including health, education, sanitation, and agriculture support for the local community."
-  />
-  <meta name="keywords" content="Panchayat Samiti Navapur, public services, health services, education, sanitation, agriculture support, rural development, Maharashtra" />
-  <meta name="author" content="Panchayat Samiti Navapur" />
-  <meta property="og:title" content="Services – Panchayat Samiti Navapur" />
-  <meta property="og:description" content="Discover the range of community services provided by Panchayat Samiti Navapur for inclusive and sustainable rural development." />
-  <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
-  <meta property="og:url" content="https://navapurpanchayat.gov.in/services" />
-  <meta name="twitter:card" content="summary_large_image" />
-</Helmet>
+      <Helmet>
+        <title>Services | Panchayat Samiti Navapur</title>
+        <meta
+          name="description"
+          content="Explore the essential public services offered by Panchayat Samiti Navapur, including health, education, sanitation, and agriculture support for the local community."
+        />
+        <meta name="keywords" content="Panchayat Samiti Navapur, public services, health services, education, sanitation, agriculture support, rural development, Maharashtra" />
+        <meta name="author" content="Panchayat Samiti Navapur" />
+        <meta property="og:title" content="Services – Panchayat Samiti Navapur" />
+        <meta property="og:description" content="Discover the range of community services provided by Panchayat Samiti Navapur for inclusive and sustainable rural development." />
+        <meta property="og:image" content="https://panchayatnavapur.netlify.app/logo.png" />
+        <meta property="og:url" content="https://navapurpanchayat.gov.in/services" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
 
       <Header />
       
       {/* Page Header with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop)' }}>
+      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(/black.jpeg)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="text-center">
@@ -266,11 +259,12 @@ const Services = () => {
                           <p className="text-sm text-gray-600">{service.contact.designation}</p>
                           <div className="flex items-center space-x-2 text-sm">
                             <Phone className="h-4 w-4 text-blue-500" />
-                            <span>{service.contact.phone}</span>
-                          </div>
-                          <div className="flex items-center space-x-2 text-sm">
-                            <Mail className="h-4 w-4 text-blue-500" />
-                            <span>{service.contact.email}</span>
+                            <a
+                              href={`tel:${service.contact.phone.replace(/\s|\+91/g, "")}`}
+                              className="text-blue-700 hover:underline focus:outline-none"
+                            >
+                              {service.contact.phone}
+                            </a>
                           </div>
                         </div>
                       </div>

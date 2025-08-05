@@ -86,7 +86,7 @@ const Contact = () => {
         className="relative bg-cover bg-center bg-no-repeat py-16"
         style={{
           backgroundImage:
-            "url(https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=600&fit=crop)",
+            "url(/black.jpeg)",
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
@@ -127,14 +127,14 @@ const Contact = () => {
                   <Phone className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
                   <div>
                     <h3 className="font-semibold">Phone Number</h3>
-                    <p>+91 98765 43210</p>
+                    <p>+91 9689560349</p>
                   </div>
                 </div>
                 <div className="flex space-x-4">
                   <Mail className="mt-1 h-6 w-6 shrink-0 text-blue-600" />
                   <div>
                     <h3 className="font-semibold">Email Address</h3>
-                    <p>info@navapurpanchayat.gov.in</p>
+                    <p>(Fill in the contact form)</p>
                   </div>
                 </div>
                 <div className="flex space-x-4">
@@ -142,8 +142,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold">Office Hours</h3>
                     <p>
-                      Mon – Fri : 10 AM–5 PM<br />
-                      Sat : 10 AM–2 PM<br />
+                      Mon – Fri : 10:00 AM – 5:30 PM<br />
+                      Sat : 10:00 AM – 2:00 PM<br />
                       Sun : Closed
                     </p>
                   </div>
@@ -199,7 +199,7 @@ const Contact = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form id="contact-form" onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
                       <Label htmlFor="name">Full Name *</Label>

@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Users, FileText, Heart, Home, Zap, Droplets, ArrowRight, Download, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Users, FileText, Heart, Home, Zap, Droplets, ArrowRight, Download, ExternalLink, Phone, MapPin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SchemeDetailModal from '../components/SchemeDetailModal';
 import { Helmet } from "react-helmet";
+
+const categoryColors = {
+  "Leadership": "bg-purple-100 text-purple-800",
+  "Department Head": "bg-blue-100 text-blue-800"
+};
 
 const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -171,22 +176,46 @@ const Index = () => {
 
   const teamMembers = [
     {
-      name: "Shri Rajesh Kumar Patil",
-      designation: "Panchayat Samiti President",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
-      contact: "+91 9876543210"
+      id: 1,
+      name: "Mr. Devidas Deore",
+      designation: "Group Development Officer",
+      category: "Leadership",
+      office: "Panchayat Samiti Navapur",
+      phone: "+91 9689560349",
+      image: "",
+      responsibilities: [
+        "Overall supervision of Panchayat Samiti activities",
+        "Policy formulation and implementation",
+        "Coordination with state and district administration",
+        "Community development programs"
+      ]
     },
     {
-      name: "Mrs. Sunita Devi Sharma",
-      designation: "Vice President",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b789?w=200&h=200&fit=crop&crop=face",
-      contact: "+91 9876543201"
+      id: 2,
+      name: "Mr. Kiran Gavit",
+      designation: "Sixth Group Development Officer",
+      category: "Leadership",
+      office: "Panchayat Samiti Navapur",
+      phone: "+91 8208780259",
+      image: "",
+      responsibilities: [
+        "Assisting in group development activities",
+        "Supporting policy implementation",
+        "Community engagement"
+      ]
     },
     {
-      name: "Mr. Anil Kumar Singh",
-      designation: "Block Development Officer",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
-      contact: "+91 9876543202"
+      id: 3,
+      name: "Mr. N.R. Ahirrao",
+      designation: "Department of Women and Child Welfare",
+      category: "Department Head",
+      office: "",
+      phone: "+91 7588828999",
+      image: "",
+      responsibilities: [
+        "Overseeing women and child welfare programs",
+        "Implementation of related schemes"
+      ]
     }
   ];
 
@@ -274,7 +303,7 @@ const Index = () => {
       <Header />
       
       {/* Hero Section with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://frontdesk.co.in/wp-content/uploads/2024/03/image-21-1030x571.png)' }}>
+      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(/may1.jpg)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="text-center">
@@ -465,30 +494,64 @@ const Index = () => {
               Meet the dedicated officials working for rural development
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {teamMembers.map((member) => (
+              <Card key={member.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="text-center pb-4">
                   <img
-                    src={member.image}
+                    src={member.image || "https://panchayatnavapur.netlify.app/logo.png"}
                     alt={member.name}
-                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover shadow-lg"
                   />
-                  <CardTitle className="text-lg">{member.name}</CardTitle>
-                  <CardDescription>{member.designation}</CardDescription>
+                  <CardTitle className="text-lg leading-tight">{member.name}</CardTitle>
+                  <CardDescription className="font-medium text-gray-700">{member.designation}</CardDescription>
+                  <Badge
+                    className={`${categoryColors[member.category] || "bg-gray-100 text-gray-800"} 
+                      transition-all duration-200 cursor-pointer
+                      hover:bg-blue-600 hover:text-white hover:scale-105 hover:shadow-lg`}
+                  >
+                    {member.category}
+                  </Badge>
+                  {member.office && (
+                    <div className="flex items-center justify-center mt-2 text-xs text-gray-500">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {member.office}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">{member.contact}</p>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center space-x-2 pt-3">
+                      <Phone className="h-4 w-4 text-blue-500" />
+                      <a
+                        href={`tel:${member.phone.replace(/\s|\+91/g, "")}`}
+                        className="text-xs text-blue-700 hover:underline focus:outline-none"
+                      >
+                        {member.phone}
+                      </a>
+                    </div>
+                    {member.responsibilities && (
+                      <div className="pt-3 border-t border-gray-100">
+                        <h4 className="font-semibold text-xs mb-2">Key Responsibilities:</h4>
+                        <ul className="text-xs text-gray-600 space-y-1">
+                          {member.responsibilities.map((resp, index) => (
+                            <li key={index} className="flex items-start">
+                              <span className="w-1 h-1 bg-blue-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                              {resp}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-          
           <div className="text-center">
             <Link to="/team">
               <Button variant="outline">
-                Meet Our Team <ArrowRight className="ml-2 h-4 w-4" />
+                Meet Full Team <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>

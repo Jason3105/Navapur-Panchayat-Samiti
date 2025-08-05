@@ -75,7 +75,7 @@ const About = () => {
       <Header />
 
       {/* Page Header with Background Image */}
-      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=600&fit=crop)' }}>
+      <section className="relative bg-cover bg-center bg-no-repeat py-16" style={{ backgroundImage: 'url(/black.jpeg)' }}>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
           <div className="text-center">
@@ -120,7 +120,7 @@ const About = () => {
             <div className="order-1 lg:order-2 relative">
               <div className="relative overflow-hidden rounded-2xl shadow-xl">
                 <img
-                  src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&h=600&fit=crop"
+                  src="/black.jpeg"
                   alt="Panchayat Samiti Building"
                   className="w-full h-64 sm:h-80 lg:h-96 object-cover"
                 />

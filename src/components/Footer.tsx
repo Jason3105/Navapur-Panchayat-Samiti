@@ -1,4 +1,3 @@
-
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 
 const Footer = () => {
@@ -16,15 +15,25 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-blue-400" />
-                <span className="text-sm">+91 9876543210</span>
+                <a
+                  href="tel:9689560349"
+                  className="text-sm text-white hover:text-blue-300 transition-colors"
+                >
+                  +91 9689560349
+                </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-blue-400" />
-                <span className="text-sm">info@navapurpanchayat.gov.in</span>
+                <a
+                  href="/contact#contact-form"
+                  className="text-sm hover:text-blue-300 transition-colors"
+                >
+                  (Fill in the contact form)
+                </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Clock className="h-4 w-4 text-blue-400" />
-                <span className="text-sm">Mon-Fri: 10:00 AM - 5:00 PM</span>
+                <span className="text-sm">Mon-Fri: 10:00 AM - 5:30 PM</span>
               </div>
             </div>
           </div>
@@ -85,7 +94,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-sm text-gray-400">
             © 2025 Panchayat Samiti Navapur, Nandurbar. All rights reserved. | 
-            <span className="ml-2">Last updated: August 3rd, 2025</span>
+            <span className="ml-2">Last updated: August 5th, 2025</span>
           </p>
           <p className="text-xs text-gray-500 mt-2">
             This site is officially developed for Panchayat Samiti Navapur and is currently hosted on a development server.
