@@ -1,6 +1,16 @@
 // Gemini API Configuration
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_API_URL = import.meta.env.VITE_GEMINI_API_URL;
+const GEMINI_API_URL = import.meta.env.VITE_GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+// Debug logging for environment variables
+console.log('Chatbot: Environment variables loaded');
+console.log('API Key available:', !!GEMINI_API_KEY);
+console.log('API URL:', GEMINI_API_URL);
+
+// Check if required configuration is available
+if (!GEMINI_API_KEY) {
+    console.error('Chatbot: VITE_GEMINI_API_KEY environment variable is not set');
+}
 
 // DOM Elements (updated IDs)
 const chatToggleBtn = document.getElementById('navapur-chat-toggle-btn');
@@ -35,6 +45,22 @@ let activeLanguage = 'en';
 // Conversation history to maintain context
 let conversationHistory = [];
 
+// Voice Assistant Configuration
+let isListening = false;
+let recognition = null;
+let synthesis = window.speechSynthesis;
+let currentUtterance = null;
+let voiceInputUsed = false; // Track if current message was sent via voice
+let voiceResponseMode = 'auto'; // 'auto', 'always', 'never'
+
+// Rate limiting variables
+let lastRequestTime = 0;
+let requestCount = 0;
+let requestTimes = [];
+const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
+const MAX_REQUESTS_PER_MINUTE = 12; // Conservative limit (less than 15 to be safe)
+const MIN_REQUEST_INTERVAL = 2000; // Minimum 2 seconds between requests
+
 // Initialize the chat
 function initChat() {
     // Toggle chat window visibility
@@ -60,18 +86,41 @@ function initChat() {
         const oldLanguage = activeLanguage;
         activeLanguage = e.target.value;
         
+        console.log(`Language changed from ${oldLanguage} to ${activeLanguage}`);
+        
         // Clear conversation history when language changes to ensure clean context
         conversationHistory = [];
         
-        // Add a system message about language change
-        const changeMsg = getLanguageChangeMessage(activeLanguage);
-        addBotMessage(changeMsg);
+        // Update voice recognition language
+        if (typeof updateRecognitionLanguage === 'function') {
+            updateRecognitionLanguage();
+        }
         
-        // Initialize conversation history with language context
-        conversationHistory.push({
-            role: 'model',
-            parts: [{ text: changeMsg }]
-        });
+        // Stop any ongoing speech
+        if (synthesis.speaking) {
+            synthesis.cancel();
+        }
+        
+        // Force voice to be used for language change message
+        const oldVoiceInputUsed = voiceInputUsed;
+        voiceInputUsed = true; // Temporarily enable voice for language change announcement
+        
+        // Wait for voices to load and then announce language change
+        setTimeout(() => {
+            const changeMsg = getLanguageChangeMessage(activeLanguage);
+            addBotMessage(changeMsg);
+            
+            // Initialize conversation history with language context
+            conversationHistory.push({
+                role: 'model',
+                parts: [{ text: changeMsg }]
+            });
+            
+            // Reset voice input flag to previous state
+            setTimeout(() => {
+                voiceInputUsed = oldVoiceInputUsed;
+            }, 100);
+        }, 200); // Increased delay to ensure voices are loaded
     });
 
     // Send message events
@@ -143,10 +192,85 @@ function getLanguageInstruction(language) {
     return instructions[language] || instructions['en'];
 }
 
+// Rate limiting helper functions
+function isRateLimited() {
+    const now = Date.now();
+    
+    // Remove requests older than 1 minute
+    requestTimes = requestTimes.filter(time => now - time < RATE_LIMIT_WINDOW);
+    
+    // Check if we've exceeded the request limit
+    if (requestTimes.length >= MAX_REQUESTS_PER_MINUTE) {
+        console.warn('Rate limit reached: too many requests in the last minute');
+        return true;
+    }
+    
+    // Check minimum interval between requests
+    if (now - lastRequestTime < MIN_REQUEST_INTERVAL) {
+        console.warn('Rate limit: requests too frequent');
+        return true;
+    }
+    
+    return false;
+}
+
+function recordRequest() {
+    const now = Date.now();
+    lastRequestTime = now;
+    requestTimes.push(now);
+}
+
+function getRateLimitMessage(language) {
+    const rateLimitMessages = {
+        'en': 'Please wait a moment before sending another message. The API has rate limits to ensure fair usage.',
+        'hi': 'कृपया दूसरा संदेश भेजने से पहले थोड़ा इंतज़ार करें। API में उचित उपयोग सुनिश्चित करने के लिए दर सीमाएं हैं।',
+        'mr': 'कृपया दुसरा संदेश पाठवण्यापूर्वी थोडा वेळ थांबा. न्याय्य वापरा सुनिश्चित करण्यासाठी API मध्ये दर मर्यादा आहेत.',
+        'gu': 'કૃપા કરીને બીજો સંદેશ મોકલતા પહેલા થોડી રાહ જુઓ. ન્યાયસંગત ઉપયોગ સુનિશ્ચિત કરવા માટે API માં દર મર્યાદાઓ છે.',
+        'ta': 'மற்றொரு செய்தியை அனுப்புவதற்கு முன் சிறிது காத்திருக்கவும். நியாயமான பயன்பாட்டை உறுதிசெய்ய API இல் வீத வரம்புகள் உள்ளன.',
+        'te': 'మరొక సందేశాన్ని పంపడానికి ముందు కొంచెం వేచి ఉండండి. న్యాయమైన వినియోగాన్ని నిర్ధారించడానికి API లో రేట్ పరిమితులు ఉన్నాయి.',
+        'kn': 'ಇನ್ನೊಂದು ಸಂದೇಶವನ್ನು ಕಳುಹಿಸುವ ಮೊದಲು ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಕಾಯಿರಿ. ನ್ಯಾಯಯುತ ಬಳಕೆಯನ್ನು ಖಾತ್ರಿಪಡಿಸಲು API ಯಲ್ಲಿ ದರ ಮಿತಿಗಳಿವೆ.',
+        'ml': 'മറ്റൊരു സന്ദേശം അയയ്ക്കുന്നതിന് മുമ്പ് ദയവായി അൽപ്പനേരം കാത്തിരിക്കുക. ന്യായമായ ഉപയോഗം ഉറപ്പാക്കാൻ API-യിൽ റേറ്റ് പരിധികളുണ്ട്.'
+    };
+    return rateLimitMessages[language] || rateLimitMessages['en'];
+}
+
+function showQuotaInformation() {
+    const quotaInfo = {
+        'en': 'ℹ️ API Usage Info:\n• Free Tier: 200 requests/day (Gemini 2.0 Flash)\n• Rate Limit: 15 requests/minute\n• Quota resets: Midnight Pacific Time\n• Current model: Gemini 2.0 Flash (Stable)',
+        'hi': 'ℹ️ API उपयोग जानकारी:\n• मुफ्त टियर: 200 अनुरोध/दिन (जेमिनी 2.0 फ्लैश)\n• दर सीमा: 15 अनुरोध/मिनट\n• कोटा रीसेट: मध्यरात्रि प्रशांत समय\n• वर्तमान मॉडल: जेमिनी 2.0 फ्लैश (स्थिर)',
+        'mr': 'ℹ️ API वापर माहिती:\n• मोफत टियर: 200 विनंत्या/दिवस (जेमिनी 2.0 फ्लॅश)\n• दर मर्यादा: 15 विनंत्या/मिनट\n• कोटा रीसेट: मध्यरात्री पॅसिफिक वेळ\n• सध्याचे मॉडेल: जेमिनी 2.0 फ्लॅश (स्थिर)'
+    };
+    
+    const message = quotaInfo[activeLanguage] || quotaInfo['en'];
+    addSystemMessage(message);
+}
+
+function getRateLimitStatus() {
+    const now = Date.now();
+    const recentRequests = requestTimes.filter(time => now - time < RATE_LIMIT_WINDOW);
+    const remainingRequests = Math.max(0, MAX_REQUESTS_PER_MINUTE - recentRequests.length);
+    const nextAvailableIn = Math.max(0, MIN_REQUEST_INTERVAL - (now - lastRequestTime));
+    
+    return {
+        requestsUsed: recentRequests.length,
+        requestsRemaining: remainingRequests,
+        nextAvailableInMs: nextAvailableIn,
+        nextAvailableInSec: Math.ceil(nextAvailableIn / 1000)
+    };
+}
+
+// Handle sending a message
 // Handle sending a message
 function handleSendMessage() {
     const message = chatInput.value.trim();
     if (message.length === 0) return;
+    
+    // Check rate limiting before sending
+    if (isRateLimited()) {
+        const rateLimitMsg = getRateLimitMessage(activeLanguage);
+        addBotMessage(rateLimitMsg);
+        return;
+    }
     
     // Add user message to chat
     addUserMessage(message);
@@ -162,6 +286,9 @@ function handleSendMessage() {
     
     // Show typing indicator
     showTypingIndicator();
+    
+    // Record the request for rate limiting
+    recordRequest();
     
     // Get response from AI
     getAIResponse(message);
@@ -184,6 +311,65 @@ function addBotMessage(message) {
     messageElement.innerHTML = marked.parse(message);
     messagesContainer.appendChild(messageElement);
     scrollToBottom();
+    
+    // Determine if we should speak this response
+    const voiceMode = localStorage.getItem('navapur-voice-mode') || 'auto';
+    let shouldSpeak = false;
+    
+    console.log(`Voice mode: ${voiceMode}, Voice input used: ${voiceInputUsed}`);
+    
+    switch (voiceMode) {
+        case 'always':
+            shouldSpeak = true;
+            console.log('Voice mode ALWAYS: will speak response');
+            break;
+        case 'auto':
+            shouldSpeak = voiceInputUsed; // Only speak if voice input was used
+            console.log(`Voice mode AUTO: will speak response = ${shouldSpeak}`);
+            break;
+        case 'never':
+            shouldSpeak = false;
+            console.log('Voice mode NEVER: will not speak response');
+            break;
+    }
+    
+    if (shouldSpeak && typeof speakText === 'function') {
+        // Extract plain text from markdown
+        const plainText = message.replace(/[#*_~`\[\]()]/g, '').replace(/\n/g, ' ').trim();
+        console.log(`Speaking response in ${activeLanguage}: ${plainText.substring(0, 50)}...`);
+        speakText(plainText);
+    } else if (shouldSpeak) {
+        console.warn('speakText function not available');
+    }
+    
+    // Reset voice input flag after processing
+    voiceInputUsed = false;
+}
+
+// Add a system message (for notifications)
+function addSystemMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('navapur-message', 'navapur-system-message');
+    messageElement.style.backgroundColor = '#fff3e0';
+    messageElement.style.color = '#f57c00';
+    messageElement.style.fontSize = '12px';
+    messageElement.style.fontStyle = 'italic';
+    messageElement.style.textAlign = 'center';
+    messageElement.style.margin = '8px auto';
+    messageElement.style.maxWidth = '90%';
+    messageElement.style.padding = '8px 12px';
+    messageElement.style.borderRadius = '12px';
+    messageElement.style.border = '1px solid #ffcc02';
+    messageElement.textContent = message;
+    messagesContainer.appendChild(messageElement);
+    scrollToBottom();
+    
+    // Remove system message after 5 seconds
+    setTimeout(() => {
+        if (messageElement.parentNode) {
+            messageElement.remove();
+        }
+    }, 5000);
 }
 
 // Show typing indicator
@@ -212,6 +398,15 @@ function scrollToBottom() {
 // Get AI response from Gemini API
 async function getAIResponse(userMessage) {
     try {
+        // Check if API key is available
+        if (!GEMINI_API_KEY) {
+            console.error('Chatbot: API key not available');
+            const errorMsg = 'Configuration error: API key not found. Please check the environment configuration.';
+            removeTypingIndicator();
+            addBotMessage(errorMsg);
+            return;
+        }
+
         // Create the system message with context and language instruction
         const systemMessage = `${PANCHAYAT_CONTEXT}\n\n${getLanguageInstruction(activeLanguage)}\n\nIMPORTANT: 
         1. You must respond in ${getLanguageName(activeLanguage)} language consistently throughout this conversation. Do not switch languages.
@@ -229,6 +424,9 @@ async function getAIResponse(userMessage) {
             ...conversationHistory
         ];
 
+        console.log('Chatbot: Making API request to:', GEMINI_API_URL);
+        console.log('Chatbot: Request body prepared, conversation history length:', conversationHistory.length);
+
         const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
@@ -241,11 +439,78 @@ async function getAIResponse(userMessage) {
                     topK: 40,
                     topP: 0.95,
                     maxOutputTokens: 1024,
-                }
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    }
+                ]
             })
         });
 
+        console.log('Chatbot: API response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Chatbot: API response error:', response.status, errorText);
+            
+            // Handle specific quota exceeded scenarios
+            if (response.status === 429 && (errorText.includes('quota') || errorText.includes('QUOTA_EXCEEDED') || 
+                errorText.includes('daily') || errorText.includes('RPD'))) {
+                removeTypingIndicator();
+                const quotaMessage = `Daily API quota exceeded. You've used your daily requests (1,500/day limit with Gemini 1.5 Flash). The quota resets at midnight Pacific Time. Consider upgrading to a paid plan for higher limits.`;
+                addBotMessage(quotaMessage);
+                
+                setTimeout(() => {
+                    addSystemMessage(`Visit Google AI Studio to check your usage and upgrade plans. Free: 1,500/day, Paid: Much Higher`);
+                }, 2000);
+                return;
+            }
+            
+            // Handle API key/permission issues
+            if (response.status === 403 || response.status === 401) {
+                removeTypingIndicator();
+                const authMessage = `API authentication issue. Your API key may not have access to the v1 API or Gemini 1.5 Flash model. You may need to create a new API key with v1 access.`;
+                addBotMessage(authMessage);
+                
+                setTimeout(() => {
+                    addSystemMessage(`Try: 1) Create new API key in Google AI Studio, 2) Or switch back to v1beta models like gemini-pro`);
+                }, 2000);
+                return;
+            }
+            
+            // Handle model not found (wrong API version)
+            if (response.status === 404 && errorText.includes('not found')) {
+                removeTypingIndicator();
+                const modelMessage = `Model not found with current API key. Your key may only have v1beta access. Switching to compatible model...`;
+                addBotMessage(modelMessage);
+                
+                setTimeout(() => {
+                    addSystemMessage(`Switching back to Gemini Pro (v1beta) for compatibility. You can create a new API key for v1 access.`);
+                    // Auto-switch back to working model
+                    window.location.reload();
+                }, 3000);
+                return;
+            }
+            
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
         const data = await response.json();
+        console.log('Chatbot: API response received:', data);
         
         // Remove typing indicator
         removeTypingIndicator();
@@ -266,18 +531,48 @@ async function getAIResponse(userMessage) {
             }
         } else {
             // Handle API error
+            console.error("Chatbot: Invalid API response structure:", data);
             const errorMsg = getErrorMessage(activeLanguage);
             addBotMessage(errorMsg);
-            console.error("API Response Error:", data);
         }
     } catch (error) {
         // Remove typing indicator
         removeTypingIndicator();
         
         // Handle error
-        const errorMsg = getErrorMessage(activeLanguage);
-        addBotMessage(errorMsg);
-        console.error("API Error:", error);
+        console.error("Chatbot: API Error details:", error);
+        
+        let errorMessage;
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network connection error. Please check your internet connection and try again.';
+        } else if (error.message.includes('403')) {
+            errorMessage = 'API access forbidden. Please check the API key configuration.';
+        } else if (error.message.includes('429')) {
+            // Check if it's a daily quota issue or per-minute rate limit
+            if (error.message.includes('quota') || error.message.includes('QUOTA_EXCEEDED') || 
+                error.message.includes('daily') || error.message.includes('RPD')) {
+                errorMessage = `Daily API quota exceeded (1,500 requests/day for free tier). The quota resets at midnight Pacific Time. You can upgrade to a paid plan for higher limits, or try again tomorrow.`;
+                
+                // Show quota information
+                setTimeout(() => {
+                    addSystemMessage(`Current limits: 1,500 requests/day (Free) vs Much Higher (Paid). Visit Google AI Studio to upgrade your plan.`);
+                }, 2000);
+            } else {
+                // Regular per-minute rate limiting
+                const retryAfter = Math.ceil((requestTimes.length > 0 ? 
+                    Math.max(0, RATE_LIMIT_WINDOW - (Date.now() - requestTimes[0])) / 1000 : 30));
+                errorMessage = `Too many requests per minute. Please wait ${retryAfter} seconds before trying again.`;
+                
+                // Show additional tips for rate limiting
+                setTimeout(() => {
+                    addSystemMessage(`Tip: Wait between messages to avoid rate limits. Current limit: ${MAX_REQUESTS_PER_MINUTE} requests per minute.`);
+                }, 2000);
+            }
+        } else {
+            errorMessage = getErrorMessage(activeLanguage);
+        }
+        
+        addBotMessage(errorMessage);
     }
 }
 
@@ -296,5 +591,485 @@ function getErrorMessage(language) {
     return errorMessages[language] || errorMessages['en'];
 }
 
+// ==================== VOICE ASSISTANT FUNCTIONS ====================
+
+// Initialize Speech Recognition
+function initVoiceAssistant() {
+    // Check browser support
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        
+        // Configure recognition
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        
+        // Set language based on active language
+        updateRecognitionLanguage();
+        
+        // Recognition event handlers
+        recognition.onstart = handleRecognitionStart;
+        recognition.onresult = handleRecognitionResult;
+        recognition.onerror = handleRecognitionError;
+        recognition.onend = handleRecognitionEnd;
+    } else {
+        console.warn('Speech recognition not supported in this browser');
+    }
+}
+
+// Update recognition language based on selected language
+function updateRecognitionLanguage() {
+    if (!recognition) return;
+    
+    const languageMap = {
+        'en': 'en-US',
+        'hi': 'hi-IN',
+        'mr': 'mr-IN',
+        'gu': 'gu-IN',
+        'ta': 'ta-IN',
+        'te': 'te-IN',
+        'kn': 'kn-IN',
+        'ml': 'ml-IN'
+    };
+    
+    recognition.lang = languageMap[activeLanguage] || 'en-US';
+}
+
+// Handle recognition start
+function handleRecognitionStart() {
+    isListening = true;
+    updateMicrophoneButton(true);
+    
+    // Stop any ongoing speech synthesis
+    if (synthesis.speaking) {
+        synthesis.cancel();
+    }
+}
+
+// Handle recognition result
+function handleRecognitionResult(event) {
+    const transcript = event.results[0][0].transcript;
+    
+    // Set the transcript as input value
+    chatInput.value = transcript;
+    
+    // Mark that voice input was used
+    voiceInputUsed = true;
+    
+    // Auto-send the message
+    handleSendMessage();
+}
+
+// Handle recognition error
+function handleRecognitionError(event) {
+    console.error('Speech recognition error:', event.error);
+    
+    const errorMessages = {
+        'en': 'Voice recognition error. Please try again.',
+        'hi': 'वॉइस पहचान त्रुटि। कृपया पुनः प्रयास करें।',
+        'mr': 'व्हॉइस ओळख त्रुटी. कृपया पुन्हा प्रयत्न करा.',
+        'gu': 'વૉઇસ ઓળખ ભૂલ. કૃપા કરીને ફરીથી પ્રયાસ કરો.',
+        'ta': 'குரல் அடையாள பிழை. மீண்டும் முயற்சிக்கவும்.',
+        'te': 'వాయిస్ గుర్తింపు లోపం. దయచేసి మళ్లీ ప్రయత్నించండి.',
+        'kn': 'ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ದೋಷ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
+        'ml': 'വോയ്സ് തിരിച്ചറിയൽ പിശക്. ദയവായി വീണ്ടും ശ്രമിക്കുക.'
+    };
+    
+    if (event.error !== 'aborted') {
+        addBotMessage(errorMessages[activeLanguage] || errorMessages['en']);
+    }
+}
+
+// Handle recognition end
+function handleRecognitionEnd() {
+    isListening = false;
+    updateMicrophoneButton(false);
+}
+
+// Toggle voice recognition
+function toggleVoiceRecognition() {
+    if (!recognition) {
+        alert('Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+        return;
+    }
+    
+    if (isListening) {
+        recognition.stop();
+    } else {
+        // Update language before starting
+        updateRecognitionLanguage();
+        recognition.start();
+    }
+}
+
+// Speak text using Text-to-Speech with better Indian voice support
+function speakText(text) {
+    // Cancel any ongoing speech
+    if (synthesis.speaking) {
+        synthesis.cancel();
+    }
+    
+    // Wait a bit for voices to be available if they're not loaded yet
+    const voices = synthesis.getVoices();
+    if (voices.length === 0) {
+        console.log('Voices not loaded yet, waiting...');
+        setTimeout(() => speakText(text), 100);
+        return;
+    }
+    
+    // Create utterance
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    
+    // Set language with better Indian voice support
+    const languageMap = {
+        'en': 'en-IN', // Use Indian English instead of US English
+        'hi': 'hi-IN',
+        'mr': 'mr-IN',
+        'gu': 'gu-IN',
+        'ta': 'ta-IN',
+        'te': 'te-IN',
+        'kn': 'kn-IN',
+        'ml': 'ml-IN'
+    };
+    
+    const targetLang = languageMap[activeLanguage] || 'en-IN';
+    currentUtterance.lang = targetLang;
+    currentUtterance.rate = 0.85; // Slightly slower for better comprehension
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = 0.9;
+    
+    console.log(`Trying to speak in ${activeLanguage} (${targetLang}):`, text.substring(0, 50) + '...');
+    console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+    
+    // Enhanced voice selection logic
+    let selectedVoice = findBestVoice(voices, targetLang, activeLanguage);
+    
+    if (selectedVoice) {
+        currentUtterance.voice = selectedVoice;
+        console.log(`Selected voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+    } else {
+        console.log('No suitable voice found, using system default');
+        // Even if no specific voice is found, the utterance will still work with the lang setting
+    }
+    
+    // Event handlers
+    currentUtterance.onstart = () => {
+        updateSpeakerButton(true);
+        console.log('Speech started successfully');
+    };
+    
+    currentUtterance.onend = () => {
+        updateSpeakerButton(false);
+        console.log('Speech ended successfully');
+    };
+    
+    currentUtterance.onerror = (error) => {
+        updateSpeakerButton(false);
+        console.error('Speech error:', error);
+        
+        // Fallback: try with English if the current language fails
+        if (activeLanguage !== 'en') {
+            console.log('Retrying with English...');
+            const englishUtterance = new SpeechSynthesisUtterance(text);
+            englishUtterance.lang = 'en-IN';
+            
+            // Find English voice
+            const englishVoice = voices.find(voice => 
+                voice.lang === 'en-IN' || voice.lang === 'en-US' || voice.lang.startsWith('en')
+            );
+            if (englishVoice) {
+                englishUtterance.voice = englishVoice;
+            }
+            
+            synthesis.speak(englishUtterance);
+        }
+    };
+    
+    // Speak
+    try {
+        synthesis.speak(currentUtterance);
+        console.log('Speech synthesis initiated');
+    } catch (error) {
+        console.error('Failed to initiate speech synthesis:', error);
+    }
+}
+
+// Test voice in current language (for debugging)
+function testVoiceInCurrentLanguage() {
+    const testMessages = {
+        'en': 'This is a test of voice synthesis in English.',
+        'hi': 'यह हिंदी में आवाज संश्लेषण का परीक्षण है।',
+        'mr': 'हे मराठी भाषेतील आवाज संश्लेषणाची चाचणी आहे.',
+        'gu': 'આ ગુજરાતીમાં વૉઇસ સિન્થેસિસની પરીક્ષા છે.',
+        'ta': 'இது தமிழில் குரல் தொகுப்பின் சோதனை.',
+        'te': 'ఇది తెలుగులో వాయిస్ సింథసిస్ యొక్క పరీక్ష.',
+        'kn': 'ಇದು ಕನ್ನಡದಲ್ಲಿ ವಾಯ್ಸ್ ಸಿಂಥೆಸಿಸ್ ಪರೀಕ್ಷೆ.',
+        'ml': 'ഇത് മലയാളത്തിലെ വോയ്സ് സിന്തസിസിന്റെ പരീക്ഷണമാണ്.'
+    };
+    
+    const testMsg = testMessages[activeLanguage] || testMessages['en'];
+    console.log('Testing voice with message:', testMsg);
+    speakText(testMsg);
+}
+
+// Helper function to find the best voice for a language
+function findBestVoice(voices, targetLang, activeLanguage) {
+    console.log(`Finding voice for ${targetLang} (active language: ${activeLanguage})`);
+    
+    // Priority 1: Exact language match with quality indicators
+    let voice = voices.find(v => 
+        v.lang === targetLang && 
+        (v.name.toLowerCase().includes('female') || 
+         v.name.toLowerCase().includes('google') ||
+         v.name.toLowerCase().includes('enhanced'))
+    );
+    if (voice) {
+        console.log('Found exact match with quality indicator:', voice.name);
+        return voice;
+    }
+    
+    // Priority 2: Exact language match
+    voice = voices.find(v => v.lang === targetLang);
+    if (voice) {
+        console.log('Found exact language match:', voice.name);
+        return voice;
+    }
+    
+    // Priority 3: Language prefix match (e.g., 'hi' matches 'hi-IN')
+    const langPrefix = targetLang.split('-')[0];
+    voice = voices.find(v => v.lang.startsWith(langPrefix));
+    if (voice) {
+        console.log('Found language prefix match:', voice.name);
+        return voice;
+    }
+    
+    // Priority 4: Special handling for Indian languages - use English Indian voice
+    if (['hi', 'mr', 'gu', 'ta', 'te', 'kn', 'ml'].includes(activeLanguage)) {
+        voice = voices.find(v => v.lang === 'en-IN');
+        if (voice) {
+            console.log('Using English Indian voice for Indian language:', voice.name);
+            return voice;
+        }
+    }
+    
+    // Priority 5: Any English voice as fallback
+    voice = voices.find(v => v.lang.startsWith('en'));
+    if (voice) {
+        console.log('Using English fallback voice:', voice.name);
+        return voice;
+    }
+    
+    // Priority 6: Default system voice
+    console.log('No suitable voice found, will use system default');
+    return null;
+}
+
+// Toggle speech synthesis with improved logic
+function toggleSpeech() {
+    if (synthesis.speaking) {
+        // If currently speaking, stop it
+        synthesis.cancel();
+        updateSpeakerButton(false);
+        return;
+    }
+    
+    // Get current voice response mode
+    const currentMode = localStorage.getItem('navapur-voice-mode') || 'auto';
+    
+    // Cycle through modes: auto -> always -> never -> auto
+    let newMode;
+    switch (currentMode) {
+        case 'auto':
+            newMode = 'always';
+            break;
+        case 'always':
+            newMode = 'never';
+            break;
+        case 'never':
+            newMode = 'auto';
+            break;
+        default:
+            newMode = 'auto';
+    }
+    
+    // Save the new mode
+    localStorage.setItem('navapur-voice-mode', newMode);
+    
+    // Update button appearance
+    updateSpeakerButtonStatus();
+    
+    // Show feedback message
+    const feedbackMessages = {
+        'auto': 'Voice Mode: AUTO - Responses will be spoken only when you use voice input',
+        'always': 'Voice Mode: ALWAYS ON - All responses will be spoken',
+        'never': 'Voice Mode: OFF - No voice responses'
+    };
+    
+    // Add a temporary notification
+    addSystemMessage(feedbackMessages[newMode]);
+    
+    console.log('Chatbot: Voice mode changed to:', newMode);
+}
+
+// Update microphone button appearance
+function updateMicrophoneButton(active) {
+    const micButton = document.getElementById('navapur-mic-button');
+    if (micButton) {
+        if (active) {
+            micButton.classList.add('active');
+            micButton.style.backgroundColor = '#ff5252';
+        } else {
+            micButton.classList.remove('active');
+            micButton.style.backgroundColor = '';
+        }
+    }
+}
+
+// Update speaker button appearance
+function updateSpeakerButton(speaking) {
+    const speakerButton = document.getElementById('navapur-speaker-button');
+    if (speakerButton) {
+        if (speaking) {
+            speakerButton.classList.add('active');
+            speakerButton.style.backgroundColor = '#2196F3';
+            speakerButton.style.color = 'white';
+        } else {
+            speakerButton.classList.remove('active');
+            speakerButton.style.backgroundColor = '';
+            speakerButton.style.color = '';
+        }
+    }
+}
+
+// Update speaker button to show voice mode status
+function updateSpeakerButtonStatus() {
+    const speakerButton = document.getElementById('navapur-speaker-button');
+    const voiceMode = localStorage.getItem('navapur-voice-mode') || 'auto';
+    
+    if (speakerButton) {
+        switch (voiceMode) {
+            case 'auto':
+                speakerButton.style.backgroundColor = '#ff9800'; // Orange for auto
+                speakerButton.style.color = 'white';
+                speakerButton.title = 'Voice Mode: AUTO - Click to change to ALWAYS ON';
+                break;
+            case 'always':
+                speakerButton.style.backgroundColor = '#4caf50'; // Green for always on
+                speakerButton.style.color = 'white';
+                speakerButton.title = 'Voice Mode: ALWAYS ON - Click to turn OFF';
+                break;
+            case 'never':
+                speakerButton.style.backgroundColor = '';
+                speakerButton.style.color = '#666666';
+                speakerButton.title = 'Voice Mode: OFF - Click to change to AUTO';
+                break;
+        }
+    }
+}
+
+// Test API connection
+async function testAPIConnection() {
+    console.log('Chatbot: Testing API connection...');
+    
+    if (!GEMINI_API_KEY) {
+        console.error('Chatbot: No API key available for testing');
+        return false;
+    }
+    
+    try {
+        const testContents = [{
+            role: 'user',
+            parts: [{ text: 'Hello, this is a test message. Please respond with "API connection successful".' }]
+        }];
+        
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: testContents,
+                generationConfig: {
+                    temperature: 0.1,
+                    maxOutputTokens: 50,
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Chatbot: API test failed with status:', response.status);
+            return false;
+        }
+        
+        const data = await response.json();
+        console.log('Chatbot: API test successful:', data);
+        return true;
+    } catch (error) {
+        console.error('Chatbot: API test error:', error);
+        return false;
+    }
+}
+
+// ==================== INITIALIZE ====================
+
 // Initialize chat when DOM is loaded
-document.addEventListener('DOMContentLoaded', initChat);
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Chatbot: DOM loaded, initializing...');
+    
+    initChat();
+    initVoiceAssistant();
+    
+    // Test API connection on load
+    const apiWorking = await testAPIConnection();
+    if (!apiWorking) {
+        console.warn('Chatbot: API connection test failed. Users may experience issues.');
+    }
+    
+    // Load voices and wait for them to be available
+    const loadVoices = () => {
+        const voices = synthesis.getVoices();
+        console.log(`Chatbot: ${voices.length} voices loaded`);
+        
+        // Log available Indian language voices for debugging
+        const indianVoices = voices.filter(voice => 
+            voice.lang.includes('IN') || 
+            ['hi', 'mr', 'gu', 'ta', 'te', 'kn', 'ml'].some(lang => voice.lang.startsWith(lang))
+        );
+        console.log('Available Indian voices:', indianVoices.map(v => `${v.name} (${v.lang})`));
+    };
+    
+    // Load voices (needed for some browsers)
+    if (synthesis.onvoiceschanged !== undefined) {
+        synthesis.onvoiceschanged = loadVoices;
+    }
+    
+    // Initial voice load
+    loadVoices();
+    
+    // Add event listeners for voice buttons
+    const micButton = document.getElementById('navapur-mic-button');
+    const speakerButton = document.getElementById('navapur-speaker-button');
+    
+    if (micButton) {
+        micButton.addEventListener('click', toggleVoiceRecognition);
+    }
+    
+    if (speakerButton) {
+        speakerButton.addEventListener('click', toggleSpeech);
+        // Set initial button status based on saved preference (default to 'auto')
+        if (!localStorage.getItem('navapur-voice-mode')) {
+            localStorage.setItem('navapur-voice-mode', 'auto');
+        }
+        updateSpeakerButtonStatus();
+    }
+    
+    console.log('Chatbot: Initialization complete');
+    
+    // Add global test functions for debugging
+    window.testChatbotVoice = testVoiceInCurrentLanguage;
+    window.getRateLimitStatus = getRateLimitStatus;
+    window.showQuotaInfo = showQuotaInformation;
+    console.log('Chatbot: Type testChatbotVoice() in console to test voice in current language');
+    console.log('Chatbot: Type getRateLimitStatus() in console to check rate limit status');
+    console.log('Chatbot: Type showQuotaInfo() in console to see API quota information');
+});
