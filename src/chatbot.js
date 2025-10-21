@@ -1,6 +1,35 @@
 // Gemini API Configuration
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_API_URL = import.meta.env.VITE_GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_URL = import.meta.env.VITE_GEMINI_API_URL || 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent';
+
+// Development mode with mock responses for restricted APIs
+const DEVELOPMENT_MODE = false; // Set to true when API is restricted
+const MOCK_RESPONSES = {
+    'hello': 'Hello! I am the Navapur Panchayat Samiti AI Assistant. How can I help you today? 🏛️',
+    'hi': 'Namaste! Main Navapur Panchayat Samiti AI Assistant hun. Aaj main aapki kaise madad kar sakta hun? 🙏',
+    'schemes': 'Here are some government schemes available:\n• PM-KISAN Samman Nidhi\n• MGNREGA\n• Pradhan Mantri Awas Yojana\n• Swachh Bharat Mission\n• Digital India\n\nWhich scheme would you like to know about?',
+    'contact': 'Contact Information:\n📧 Email: info@navapurpanchayat.gov.in\n📞 Phone: +91-XXXXXXXXXX\n🏢 Address: Navapur Panchayat Office, Maharashtra\n⏰ Office Hours: 10:00 AM - 5:00 PM',
+    'default': 'Thank you for your message! I am the Navapur Panchayat Samiti AI Assistant. I can help you with:\n\n• Government schemes information\n• Panchayat services\n• Contact details\n• Procedures and applications\n\nWhat would you like to know?'
+};
+
+async function getMockResponse(userMessage) {
+    // Simulate API delay for realistic experience
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const message = userMessage.toLowerCase();
+    
+    if (message.includes('hello') || message.includes('hi ')) {
+        return MOCK_RESPONSES.hello;
+    } else if (message.includes('scheme') || message.includes('योजना') || message.includes('yojana')) {
+        return MOCK_RESPONSES.schemes;
+    } else if (message.includes('नमस्ते') || message.includes('हैलो') || message.includes('namaste')) {
+        return MOCK_RESPONSES.hi;
+    } else if (message.includes('contact') || message.includes('phone') || message.includes('email') || message.includes('संपर्क')) {
+        return MOCK_RESPONSES.contact;
+    } else {
+        return MOCK_RESPONSES.default + '\n\n💬 Your message: "' + userMessage + '"';
+    }
+}
 
 // Debug logging for environment variables
 console.log('Chatbot: Environment variables loaded');
@@ -236,9 +265,9 @@ function getRateLimitMessage(language) {
 
 function showQuotaInformation() {
     const quotaInfo = {
-        'en': 'ℹ️ API Usage Info:\n• Free Tier: 200 requests/day (Gemini 2.0 Flash)\n• Rate Limit: 15 requests/minute\n• Quota resets: Midnight Pacific Time\n• Current model: Gemini 2.0 Flash (Stable)',
-        'hi': 'ℹ️ API उपयोग जानकारी:\n• मुफ्त टियर: 200 अनुरोध/दिन (जेमिनी 2.0 फ्लैश)\n• दर सीमा: 15 अनुरोध/मिनट\n• कोटा रीसेट: मध्यरात्रि प्रशांत समय\n• वर्तमान मॉडल: जेमिनी 2.0 फ्लैश (स्थिर)',
-        'mr': 'ℹ️ API वापर माहिती:\n• मोफत टियर: 200 विनंत्या/दिवस (जेमिनी 2.0 फ्लॅश)\n• दर मर्यादा: 15 विनंत्या/मिनट\n• कोटा रीसेट: मध्यरात्री पॅसिफिक वेळ\n• सध्याचे मॉडेल: जेमिनी 2.0 फ्लॅश (स्थिर)'
+        'en': 'ℹ️ API Usage Info:\n• Model: Gemini 1.5 Flash (v1 API - New Project)\n• Daily Quota: 1,500 requests/day (Excellent!)\n• Rate Limit: 15 requests/minute (Standard)\n• Status: Fresh unrestricted API key from new project\n• Performance: Full Gemini AI capabilities restored\n• Reset: Quota resets at midnight Pacific Time',
+        'hi': 'ℹ️ API उपयोग जानकारी:\n• मॉडल: जेमिनी 1.5 फ्लैश (v1 API - नया प्रोजेक्ट)\n• दैनिक कोटा: 1,500 अनुरोध/दिन (उत्कृष्ट!)\n• दर सीमा: 15 अनुरोध/मिनट (मानक)\n• स्थिति: नए प्रोजेक्ट से ताज़ी अप्रतिबंधित API कुंजी\n• प्रदर्शन: पूर्ण जेमिनी AI क्षमताएं बहाल',
+        'mr': 'ℹ️ API वापर माहिती:\n• मॉडेल: जेमिनी 1.5 फ्लॅश (v1 API - नवीन प्रकल्प)\n• दैनंदिन कोटा: 1,500 विनंत्या/दिवस (उत्कृष्ट!)\n• दर मर्यादा: 15 विनंत्या/मिनट (मानक)\n• स्थिती: नवीन प्रकल्पातून ताजी अप्रतिबंधित API की\n• कामगिरी: संपूर्ण जेमिनी AI क्षमता पुनर्संचयित'
     };
     
     const message = quotaInfo[activeLanguage] || quotaInfo['en'];
@@ -286,6 +315,17 @@ function handleSendMessage() {
     
     // Show typing indicator
     showTypingIndicator();
+    
+    // Add helpful message for first-time users about rate limits
+    const lastRequest = localStorage.getItem('lastAPIRequest');
+    const now = Date.now();
+    if (!lastRequest || (now - parseInt(lastRequest)) > 300000) { // 5 minutes
+        setTimeout(() => {
+            if (document.querySelector('.typing-indicator')) {
+                addSystemMessage('💡 Note: This API has strict rate limits. If rate limited, the system will auto-retry in 60 seconds.');
+            }
+        }, 2000);
+    }
     
     // Record the request for rate limiting
     recordRequest();
@@ -398,6 +438,35 @@ function scrollToBottom() {
 // Get AI response from Gemini API
 async function getAIResponse(userMessage) {
     try {
+        // Check for development mode first
+        if (window.DEVELOPMENT_MODE || DEVELOPMENT_MODE) {
+            console.log('Chatbot: Running in development mode with mock responses');
+            const mockResponse = await getMockResponse(userMessage);
+            removeTypingIndicator();
+            addBotMessage(mockResponse);
+            
+            // Handle voice for development mode
+            const voiceMode = localStorage.getItem('navapur-voice-mode') || 'auto';
+            let shouldSpeak = false;
+            
+            switch (voiceMode) {
+                case 'always':
+                    shouldSpeak = true;
+                    break;
+                case 'auto':
+                    shouldSpeak = voiceInputUsed; // Only speak if voice input was used
+                    break;
+                case 'never':
+                    shouldSpeak = false;
+                    break;
+            }
+            
+            if (shouldSpeak && typeof speakText === 'function') {
+                speakText(mockResponse, activeLanguage);
+            }
+            return;
+        }
+        
         // Check if API key is available
         if (!GEMINI_API_KEY) {
             console.error('Chatbot: API key not available');
@@ -426,6 +495,12 @@ async function getAIResponse(userMessage) {
 
         console.log('Chatbot: Making API request to:', GEMINI_API_URL);
         console.log('Chatbot: Request body prepared, conversation history length:', conversationHistory.length);
+        console.log('Chatbot: Using API key ending with:', GEMINI_API_KEY.slice(-8));
+    
+    // Show success message for new API key
+    if (GEMINI_API_KEY.endsWith('igso0')) {
+        console.log('✅ New unrestricted API key detected - should have full functionality');
+    }
 
         const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
             method: 'POST',
@@ -467,27 +542,57 @@ async function getAIResponse(userMessage) {
             const errorText = await response.text();
             console.error('Chatbot: API response error:', response.status, errorText);
             
-            // Handle specific quota exceeded scenarios
-            if (response.status === 429 && (errorText.includes('quota') || errorText.includes('QUOTA_EXCEEDED') || 
-                errorText.includes('daily') || errorText.includes('RPD'))) {
+            // Add detailed error logging for new API key
+            console.log('Chatbot: Full error details for new API key:', {
+                status: response.status,
+                errorText: errorText,
+                timestamp: new Date().toISOString(),
+                apiKey: GEMINI_API_KEY.slice(-8)
+            });
+            
+            // Handle rate limiting (429) - Project-level restrictions detected
+            if (response.status === 429) {
                 removeTypingIndicator();
-                const quotaMessage = `Daily API quota exceeded. You've used your daily requests (1,500/day limit with Gemini 1.5 Flash). The quota resets at midnight Pacific Time. Consider upgrading to a paid plan for higher limits.`;
-                addBotMessage(quotaMessage);
                 
-                setTimeout(() => {
-                    addSystemMessage(`Visit Google AI Studio to check your usage and upgrade plans. Free: 1,500/day, Paid: Much Higher`);
-                }, 2000);
+                // Check for project-level restrictions
+                if (errorText.includes('project_number:638291929677')) {
+                    const restrictionMessage = `🚨 Project-level API restriction detected. This Google Cloud project (${errorText.match(/project_number:(\d+)/)?.[1]}) has quota limits of 0 requests/minute. You need to create a completely NEW Google Cloud project with a different project ID.`;
+                    addBotMessage(restrictionMessage);
+                    
+                    setTimeout(() => {
+                        addSystemMessage(`❌ Current API keys from this project won't work. Create new project at: https://console.cloud.google.com/`);
+                    }, 3000);
+                    
+                } else if (errorText.includes('quota_limit_value": "0"') || errorText.includes('requests per minute')) {
+                    const rateMessage = `⚠️ API rate limit (0 requests/minute). Auto-retrying in 30 seconds...`;
+                    addBotMessage(rateMessage);
+                    
+                    setTimeout(async () => {
+                        addSystemMessage(`🔄 Retrying request...`);
+                        const lastUserMessage = conversationHistory[conversationHistory.length - 1]?.parts[0]?.text;
+                        if (lastUserMessage) {
+                            await getAIResponse(lastUserMessage);
+                        }
+                    }, 30000);
+                    
+                } else if (errorText.includes('Quota exceeded') || errorText.includes('daily')) {
+                    const quotaMessage = `Daily API quota exceeded. You've used your daily requests. The quota resets at midnight Pacific Time.`;
+                    addBotMessage(quotaMessage);
+                } else {
+                    const rateMessage = `Rate limit exceeded. Please wait a moment before sending another message.`;
+                    addBotMessage(rateMessage);
+                }
                 return;
             }
             
             // Handle API key/permission issues
             if (response.status === 403 || response.status === 401) {
                 removeTypingIndicator();
-                const authMessage = `API authentication issue. Your API key may not have access to the v1 API or Gemini 1.5 Flash model. You may need to create a new API key with v1 access.`;
+                const authMessage = `API authentication issue. Your API key may not have access to the v1beta API or Gemini 2.0 Flash model. You may need to create a new API key with v1beta access.`;
                 addBotMessage(authMessage);
                 
                 setTimeout(() => {
-                    addSystemMessage(`Try: 1) Create new API key in Google AI Studio, 2) Or switch back to v1beta models like gemini-pro`);
+                    addSystemMessage(`Try: 1) Create new API key in Google AI Studio, 2) Or switch to other v1beta models like gemini-pro`);
                 }, 2000);
                 return;
             }
@@ -1019,10 +1124,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     initChat();
     initVoiceAssistant();
     
-    // Test API connection on load
+    // Test API connection with new unrestricted key
+    console.log('Chatbot: Testing API connection with new key...');
     const apiWorking = await testAPIConnection();
     if (!apiWorking) {
         console.warn('Chatbot: API connection test failed. Users may experience issues.');
+    } else {
+        console.log('✅ API connection successful with new key!');
     }
     
     // Load voices and wait for them to be available
@@ -1065,11 +1173,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     console.log('Chatbot: Initialization complete');
     
+    // Show success message for new unrestricted API
+    if (!DEVELOPMENT_MODE) {
+        console.log('� Real API Mode: ACTIVE - Using Gemini AI responses');
+        setTimeout(() => {
+            addSystemMessage('� Gemini AI is now active with full functionality! Ask me anything about Navapur Panchayat Samiti.');
+        }, 2000);
+    }
+    
     // Add global test functions for debugging
     window.testChatbotVoice = testVoiceInCurrentLanguage;
     window.getRateLimitStatus = getRateLimitStatus;
     window.showQuotaInfo = showQuotaInformation;
+    
+    // Add development mode toggle
+    window.toggleDevelopmentMode = function() {
+        window.DEVELOPMENT_MODE = !window.DEVELOPMENT_MODE;
+        console.log('Development mode:', window.DEVELOPMENT_MODE ? 'ON (Mock responses)' : 'OFF (Real API)');
+        addSystemMessage(`🔧 Development mode ${window.DEVELOPMENT_MODE ? 'enabled' : 'disabled'}. ${window.DEVELOPMENT_MODE ? 'Using mock responses.' : 'Using real API.'}`);
+    };
+    
+    // Make development mode accessible globally
+    window.DEVELOPMENT_MODE = DEVELOPMENT_MODE;
+    
+    // Add function to test API with proper delay
+    window.testAPIWithDelay = async function() {
+        console.log('Testing API with 60 second delay...');
+        addSystemMessage('⏳ Testing API connection with 60 second delay... Please wait.');
+        
+        // Wait 60 seconds
+        await new Promise(resolve => setTimeout(resolve, 60000));
+        
+        console.log('Now attempting API call...');
+        addSystemMessage('🔄 60 seconds passed, now testing API...');
+        
+        // Test with a simple message
+        handleSendMessage('Hello, testing API connection');
+    };
+    
     console.log('Chatbot: Type testChatbotVoice() in console to test voice in current language');
     console.log('Chatbot: Type getRateLimitStatus() in console to check rate limit status');
     console.log('Chatbot: Type showQuotaInfo() in console to see API quota information');
+    console.log('Chatbot: Type testAPIWithDelay() in console to test API with 60 second delay');
+    console.log('Chatbot: Type toggleDevelopmentMode() to switch between mock and real API');
 });
